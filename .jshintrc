@@ -1,0 +1,23 @@
+{
+    "globals": {
+        // library
+        "suite": false,
+        "test": false,
+        "setup": false,
+        "teardown": false
+    },
+    "browser": true,
+    "node": true,
+    "expr": true,
+    "eqeqeq": true,
+    "newcap": true,
+    "quotmark": true,
+    "undef": true,
+    "unused": "vars",
+    "trailing": true,
+    "supernew": true,
+    "lastsemic": true,
+    "evil": true,
+    "funcscope": true
+}
+// vim: set filetype=javascript:

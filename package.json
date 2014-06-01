@@ -1,0 +1,28 @@
+{
+  "name": "rusk",
+  "version": "0.0.0",
+  "description": "The task runner with synchronous api",
+  "main": "lib/rusk.js",
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "test": "mocha -u tdd "
+  },
+  "author": "norahiko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/norahiko/rusk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/norahiko/rusk/issues"
+  },
+  "homepage": "https://github.com/norahiko/rusk",
+  "dependencies": {
+    "nan": "^1.0.0",
+    "glob": "^3.2.9"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
+  }
+}
