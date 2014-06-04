@@ -5,8 +5,8 @@ var assert = require('chai').assert;
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 var env = rusk.env;
-
 var root = process.cwd();
+
 
 suite('Change directory command:', function() {
     setup(function () {
@@ -273,4 +273,3 @@ suite('Shell command:', function() {
         equal(rusk.readFile(tempfile), 'temp');
     });
 });
-

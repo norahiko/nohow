@@ -6,14 +6,13 @@ var rusk = require('../lib/rusk.js');
 var assert = require('chai').assert;
 var equal = assert.strictEqual;
 var env = rusk.env;
-
 var root = process.cwd();
+
 
 suite('Expand command:', function () {
     env.key = 'value';
     env.file = 'dir/file.js';
     env.object = {key: [1, 2, ['piyo']], path: 'path.obj'};
-
     var _cwd = process.cwd;
 
     setup(function() {
@@ -125,4 +124,3 @@ suite('Misc command:', function() {
         assert(output[1], 'ok');
     });
 });
-

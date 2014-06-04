@@ -1,7 +1,6 @@
 'use strict';
 
 Error.stackTraceLimit = 7;
-//var rusk = require('../lib/rusk.js');
 var taskModule = require('../lib/task.js');
 var Task = taskModule.Task;
 
@@ -29,10 +28,7 @@ suite.skip('Task', function() {
         equal(task.mode, 'builtin');
         equal(task.description, 'test task');
         equal(task.timeout, 123000);
-
     });
-
-
 
     test('sync task', function() {
         var taskA = new Task('A', ['B', 'C'], noop);
