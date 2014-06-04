@@ -2,10 +2,13 @@
   "name": "rusk",
   "version": "0.0.0",
   "description": "The task runner with synchronous api",
-  "main": "lib/rusk.js",
+  "main": "lib/__rusk.js",
   "scripts": {
     "build": "node-gyp rebuild",
     "test": "mocha -u tdd "
+  },
+  "bin": {
+      "rusk": "./bin/rusk_bin.js"
   },
   "author": "norahiko",
   "license": "MIT",
