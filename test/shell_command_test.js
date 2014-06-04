@@ -1,4 +1,3 @@
-var pathModule = require('path');
 var fs = require('fs');
 var rusk = require('../lib/rusk.js');
 
@@ -35,11 +34,10 @@ suite('Shell command:', function() {
 
     setup(function() {
         /*
-        create testfiles
-        cwd == test/data
+        create test files
 
         test
-        └── data
+        └── data (current directory)
             ├── TESTDATA.txt
             ├── bin
             │   └── app
@@ -48,8 +46,8 @@ suite('Shell command:', function() {
                 ├── main.txt
                 └── util.txt
         */
+        process.chdir(root);
         rusk.removeRecursive('test/data');
-        assert(pathModule.basename(root) === 'rusk');
         fs.mkdirSync(testdir);
         process.chdir(testdir);
         fs.writeFileSync('TESTDATA.txt', 'testdata');
@@ -75,6 +73,10 @@ suite('Shell command:', function() {
             rusk.ls('*'),
             ['TESTDATA.txt', 'bin/app', 'lib/linkmain', 'lib/main.txt', 'lib/util.txt']
         );
+
+        assert.throws(function() {
+            rusk.ls(['*.foo', '*.bar']);
+        }, 'rusk.listdir');
     });
 
     test('glob', function () {
@@ -97,6 +99,16 @@ suite('Shell command:', function() {
         rusk.mkdir('newdir');
         rusk.mkdir('newdir'); // not throws Error
         assert(fs.statSync('newdir').isDirectory());
+
+        assert.throws(function() {
+            // not enough arguments
+            rusk.mkdir();
+        }, 'rusk.expand');
+
+        assert.throws(function() {
+            // already a file exists (not directory)
+            rusk.mkdir('TESTDATA.txt');
+        }, 'EEXIST');
     });
 
     test('move', function() {
@@ -113,15 +125,24 @@ suite('Shell command:', function() {
         equal(fs.readFileSync('lib/bin/moved.txt', 'utf8'), 'main');
         assert(rusk.notExists('bin'));
 
+        assert.throws(function() {
+            // not enough arguments
+            rusk.move('TESTDATA.txt');
+        }, 'rusk.expand');
+
         assert.throws(function () {
-            rusk.move('not_a_file', 'foo');
-        });
+            // source is not exists
+            rusk.move('not_exists_file', 'foo');
+        }, 'rusk.move');
+
         assert.throws(function () {
+            // move current directory
             rusk.move('./', 'lib');
-        });
+        }, 'EBUSY');
         assert.throws(function () {
+            // move directory into self
             rusk.move('lib', 'lib');
-        });
+        }, 'EINVAL');
     });
 
     test('move files', function() {
@@ -139,6 +160,16 @@ suite('Shell command:', function() {
 
         rusk.copy('lib', 'copylib');
         equal(rusk.readFile('copylib/lib/main.txt'), 'main');
+
+        assert.throws(function() {
+            // not enough arguments
+            rusk.copy('TESTDATA.txt');
+        }, 'rusk.expand');
+
+        assert.throws(function() {
+            // copy directory to file
+            rusk.copy('lib', 'TESTDATA.txt');
+        }, 'ENOTDIR');
     });
 
     test('copy link', function() {
@@ -151,6 +182,10 @@ suite('Shell command:', function() {
 
         assert(fs.lstatSync('pack/linkdir').isSymbolicLink());
         equal(fs.readFileSync('pack/linkdir/main.txt', 'utf8'), 'main');
+
+        // replace link
+        rusk.copy('linkdir', 'lib/linkmain');
+        equal(fs.readlinkSync('lib/linkmain'), 'lib');
     });
 
     test('copy files', function() {
@@ -160,43 +195,63 @@ suite('Shell command:', function() {
     });
 
     test('remove', function() {
-        assert.doesNotThrow(function () {
-            fs.writeFileSync('newfile', 'new');
-            rusk.remove('newfile');
+        rusk.remove('lib/main.txt');
+        assert(fs.existsSync('lib/main.txt') === false);
+
+        assert.doesNotThrow(function() {
             rusk.remove('not_exists_file');
         });
+
+        assert.throws(function() {
+            // cannot remove directory
+            rusk.remove('lib');
+        }, 'EISDIR');
     });
 
     test('removeRecursive', function() {
-        fs.mkdirSync('a_dir');
-        fs.writeFileSync('a_dir/newfile', 'new');
-        rusk.removeRecursive('a_dir');
-        assert(fs.existsSync('a_dir') === false);
+        rusk.removeRecursive('lib');
+        assert(fs.existsSync('lib') === false);
+
+        assert.doesNotThrow(function() {
+            rusk.removeRecursive('not_exists_dir');
+        });
     });
 
     test('concat', function() {
         equal(rusk.concat(['$main', '$util']), 'main\nutil');
         equal(rusk.concat(['$main', '$util'], '\n-----\n'), 'main\n-----\nutil');
+
+        assert.throws(function() {
+            rusk.concat(['not_exists_file.*']);
+        }, 'rusk.concat');
     });
 
     test('concatBuffer', function() {
         var result = rusk.concatBuffer(['$main', '$util']);
         assert.instanceOf(result, Buffer);
         equal(result.toString(), 'mainutil');
+
+        assert.throws(function() {
+            rusk.concatBuffer(['not_exists_file.*']);
+        }, 'rusk.concat');
     });
 
     test('edit', function() {
+        // $main == main
         rusk.edit('$main', function(filepath, contents) {
-            // save changes
+            // saved
             equal(filepath, rusk.expand('$main:abs'));
             equal(contents, 'main');
             return 'foobar';
         });
 
+        // $main == foobar
         rusk.edit('$main', function(filepath, contents) {
-            // no change
+            // not saved
             equal(contents, 'foobar');
         });
+
+        equal(rusk.readFile('$main'), 'foobar');
     });
 
     test('replace', function() {
@@ -215,7 +270,7 @@ suite('Shell command:', function() {
 
     test('tempfile', function() {
         var tempfile = rusk.tempfile('temp');
-        equal(fs.readFileSync(tempfile).toString(), 'temp');
+        equal(rusk.readFile(tempfile), 'temp');
     });
 });
 

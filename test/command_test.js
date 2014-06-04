@@ -12,7 +12,7 @@ var root = process.cwd();
 suite('Expand command:', function () {
     env.key = 'value';
     env.file = 'dir/file.js';
-    env.object = {key: [1, 2, ['piyo']]};
+    env.object = {key: [1, 2, ['piyo']], path: 'path.obj'};
 
     var _cwd = process.cwd;
 
@@ -37,7 +37,9 @@ suite('Expand command:', function () {
 
     test('expand attributes', function() {
         equal(rusk.expand('$file.length'), '11');
+        equal(rusk.expand('${file.length}'), '11');
         equal(rusk.expand('$object.key.2.0'), 'piyo');
+        equal(rusk.expand('${object.path:abs}'), '/test/path.obj');
     });
 
     test('expand filter', function() {
@@ -48,7 +50,17 @@ suite('Expand command:', function () {
         equal(rusk.expand('$file:dir'), 'dir');
         equal(rusk.expand('$file:base'), 'file.js');
         equal(rusk.expand('$file:rmext'), 'dir/file');
-        equal(rusk.expand('$file:base:rmext'), 'file');
+        equal(rusk.expand('$0:digit2', 0), '00');
+        equal(rusk.expand('$0:digit2', 1), '01');
+        equal(rusk.expand('$0:digit2', -1), '-01');
+        equal(rusk.expand('$0:digit2', 1.234), '01');
+        equal(rusk.expand('$0:digit2', 1.9), '01');
+        equal(rusk.expand('$0:digit2', -1.9), '-01');
+        equal(rusk.expand('$0:digit2', 10), '10');
+        equal(rusk.expand('$0:digit2', -10), '-10');
+        equal(rusk.expand('$0:digit2', 100), '100');
+        equal(rusk.expand('$0:digit2', -100), '-100');
+        equal(rusk.expand('$0:digit6', 123), '000123');
     });
 
     test('expand arguments', function() {
