@@ -12,7 +12,7 @@ function asyncCallback(done) {
 }
 
 
-suite.only('Task', function() {
+suite('Task:', function() {
     setup(function() {
         taskModule.reset();
     });
