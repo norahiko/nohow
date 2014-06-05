@@ -31,8 +31,8 @@ suite('Task:', function() {
 
     test('sync task', function() {
         var taskA = new Task('A', ['B', 'C'], noop);
-        taskModule.addTaskCommand('B', noop);
-        taskModule.addTaskCommand('C', noop);
+        taskModule.addTask('B', noop);
+        taskModule.addTask('C', noop);
 
         var hasDone = false;
         taskA.start(function() {
@@ -45,8 +45,8 @@ suite('Task:', function() {
         var taskA = new Task('A', ['B'], function() {
             throw new Error('A');
         });
-        taskModule.addTaskCommand('B', noop);
-        taskModule.addTaskCommand('C', function() {
+        taskModule.addTask('B', noop);
+        taskModule.addTask('C', function() {
             throw new Error('C');
         });
 
@@ -68,8 +68,8 @@ suite('Task:', function() {
 
     test('async task', function(end) {
         var taskA = new Task('A', ['B', 'C'], noop);
-        taskModule.addAsyncTaskCommand('B', asyncCallback);
-        taskModule.addAsyncTaskCommand('C', asyncCallback);
+        taskModule.addAsyncTask('B', asyncCallback);
+        taskModule.addAsyncTask('C', asyncCallback);
 
         var isDone = false;
         function done(err) {
@@ -89,16 +89,16 @@ suite('Task:', function() {
         var messages = [];
         var task = new Task('A', ['B'], noop);
 
-        taskModule.addTaskCommand('B', function() {
+        taskModule.addTask('B', function() {
             throw new Error('foo');
         });
 
-        taskModule.catchErrorCommand('B', function(err) {
+        taskModule.catchError('B', function(err) {
             messages.push(err.message);
             throw new Error('bar');
         });
 
-        taskModule.catchErrorCommand('B', function(err) {
+        taskModule.catchError('B', function(err) {
             messages.push(err.message);
             throw new Error('baz');
         });
@@ -111,11 +111,11 @@ suite('Task:', function() {
     });
 
     test('catch error async', function(end) {
-        taskModule.addAsyncTaskCommand('A', ['B'], asyncCallback);
-        taskModule.addAsyncTaskCommand('B', function(done) {
+        taskModule.addAsyncTask('A', ['B'], asyncCallback);
+        taskModule.addAsyncTask('B', function(done) {
             done(new Error('foo'));
         });
-        taskModule.catchErrorCommand('B', noop);
+        taskModule.catchError('B', noop);
 
         var isDone = false;
         Task.get('A').start(function(err) {
@@ -130,7 +130,7 @@ suite('Task:', function() {
     });
 
     test('async test timeout', function(end) {
-        taskModule.addAsyncTaskCommand('A', function(done) {
+        taskModule.addAsyncTask('A', function(done) {
             // timeout: 1
             setTimeout(done, 100);
         });
@@ -142,7 +142,7 @@ suite('Task:', function() {
     });
 
     test('async test not timeout', function(end) {
-        taskModule.addAsyncTaskCommand('A', function(done) {
+        taskModule.addAsyncTask('A', function(done) {
             // timeout: 100
             setImmediate(done);
         });
