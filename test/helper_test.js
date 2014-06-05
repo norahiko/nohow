@@ -6,14 +6,26 @@ var assert = chai.assert;
 var deepEqual = assert.deepEqual;
 
 
-suite('Lazylib', function() {
+suite('Lazylib:', function() {
     test('lazylib', function() {
         assert.isDefined(helper.lazylib.glob, 'lazylib.glob');
     });
 });
 
 
-suite('Fs helper:', function() {
+suite('Rusk system helper:', function() {
+    test('parseArgs', function() {
+        var opts = helper.parseArgs([
+            '-f', 'ruskfile.js', '-x', 'foo,bar', '-x', 'rusk-baz',
+            'taskA', 'taskB', '--help', '-T'
+        ]);
+
+        deepEqual(opts.ruskfilePath, 'ruskfile.js');
+        deepEqual(opts.excludePlugins, ['rusk-foo', 'rusk-bar', 'rusk-baz']);
+        deepEqual(opts.tasks, ['taskA', 'taskB']);
+        deepEqual(opts.helpFlag, true);
+        deepEqual(opts.taskListFlag, true);
+    });
 });
 
 
@@ -32,6 +44,7 @@ suite('Array helper:', function() {
         );
     });
 });
+
 
 suite('Exec helper:', function() {
     test('shellsplit', function() {
