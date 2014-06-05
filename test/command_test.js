@@ -123,4 +123,9 @@ suite('Misc command:', function() {
         assert(/command_test\.js/.test(output[0]));
         assert(output[1], 'ok');
     });
+
+    test('executable', function() {
+        assert(rusk.executable('node'));
+        assert(!!!rusk.executable('not a binary file'));
+    });
 });
