@@ -272,4 +272,16 @@ suite('Shell command:', function() {
         var tempfile = rusk.tempfile('temp');
         equal(rusk.readFile(tempfile), 'temp');
     });
+
+    test('modified', function(/* done */) {
+        equal(rusk.modified('$main'), true);
+        equal(rusk.modified('$main'), false);
+
+        // this test is too slow
+        //setTimeout(function() {
+            //rusk.writeFile('$main', 'changed');
+            //equal(rusk.modified('$main'), true);
+            //done();
+        //}, 1000);
+    });
 });
