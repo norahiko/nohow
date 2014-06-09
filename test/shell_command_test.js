@@ -250,25 +250,6 @@ suite('Shell command:', function() {
     });
 
 
-    test('edit', function() {
-        // $main == main
-        rusk.edit('$main', function(filepath, contents) {
-            // saved
-            equal(filepath, rusk.expand('$main:abs'));
-            equal(contents, 'main');
-            return 'foobar';
-        });
-
-        // $main == foobar
-        rusk.edit('$main', function(filepath, contents) {
-            // not saved
-            equal(contents, 'foobar');
-        });
-
-        equal(rusk.readFile('$main'), 'foobar');
-    });
-
-
     test('replace', function() {
         var contents = [];
         rusk.replace('TESTDATA.txt', /.+/g, function(match) {
