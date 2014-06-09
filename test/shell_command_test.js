@@ -250,6 +250,20 @@ suite('Shell command:', function() {
     });
 
 
+    test('append', function() {
+        rusk.append('$main', '1');
+        rusk.append('$main', '2');
+        equal(rusk.readFile('$main'), 'main12');
+    });
+
+
+    test('prepend', function() {
+        rusk.prepend('$main', '2');
+        rusk.prepend('$main', '1');
+        equal(rusk.readFile('$main'), '12main');
+    });
+
+
     test('replace', function() {
         var contents = [];
         rusk.replace('TESTDATA.txt', /.+/g, function(match) {
