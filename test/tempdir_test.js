@@ -14,11 +14,13 @@ suite('Tempdir', function() {
         equal(fs.readFileSync(path, 'utf8'), 'contents');
     });
 
+
     test('clear files', function() {
         var path = tempdir.createTempfile('temp', 'contents');
         tempdir.clearTempfiles();
         assert(false === fs.existsSync(path));
     });
+
 
     test('config file', function() {
         var config = tempdir.loadConfigFile('test');

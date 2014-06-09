@@ -37,6 +37,7 @@ suite('Array helper:', function() {
         );
     });
 
+
     test('flatten', function() {
         deepEqual(
             helper.flatten([[1],[2],[3, 4], 5]),

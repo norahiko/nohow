@@ -21,9 +21,11 @@ suite('Expand command:', function () {
         };
     });
 
+
     teardown(function() {
         process.cwd = _cwd;
     });
+
 
     test('expand env', function () {
         equal(rusk.expand('$key'), 'value');
@@ -34,12 +36,14 @@ suite('Expand command:', function () {
         equal(rusk.expand('~'), process.env.HOME);
     });
 
+
     test('expand attributes', function() {
         equal(rusk.expand('$file.length'), '11');
         equal(rusk.expand('${file.length}'), '11');
         equal(rusk.expand('$object.key.2.0'), 'piyo');
         equal(rusk.expand('${object.path:abs}'), '/test/path.obj');
     });
+
 
     test('expand filter', function() {
         if(process.platform !== 'win32') {
@@ -62,15 +66,18 @@ suite('Expand command:', function () {
         equal(rusk.expand('$0:digit6', 123), '000123');
     });
 
+
     test('expand arguments', function() {
         equal(rusk.expand('Hello, $0', 'RuskJS'), 'Hello, RuskJS');
         equal(rusk.expand('$0$1 is not $0', 'Java', 'Script'), 'JavaScript is not Java');
     });
 
+
     test('not expanded', function () {
         equal(rusk.expand('${key'), '${key');
 
     });
+
 
     test('expand error', function() {
         assert.throws(function() {
@@ -101,11 +108,13 @@ suite('Misc command:', function() {
         process.chdir(root);
     });
 
+
     test('defined', function() {
         for(var name in rusk.commands) {
             assert.isDefined(rusk.commands[name], 'commands.' + name + ' is undefined');
         }
     });
+
 
     test('trace', function() {
         var output;
@@ -123,6 +132,7 @@ suite('Misc command:', function() {
         assert(/command_test\.js/.test(output[0]));
         assert(output[1], 'ok');
     });
+
 
     test('executable', function() {
         assert(rusk.executable('node'));

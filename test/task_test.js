@@ -17,6 +17,7 @@ suite('Task:', function() {
         taskModule.reset();
     });
 
+
     test('initialize', function() {
         var task = new Task('foo', ['a', 'b'], function() {
             // description: test task
@@ -28,6 +29,7 @@ suite('Task:', function() {
         equal(task.description, 'test task');
         equal(task.timeout, 123000);
     });
+
 
     test('sync task', function() {
         var taskA = new Task('A', ['B', 'C'], noop);
@@ -110,6 +112,7 @@ suite('Task:', function() {
         deepEqual(messages, ['foo', 'bar', 'baz']);
     });
 
+
     test('catch error async', function(end) {
         taskModule.addAsyncTask('A', ['B'], asyncCallback);
         taskModule.addAsyncTask('B', function(done) {
@@ -117,17 +120,18 @@ suite('Task:', function() {
         });
         taskModule.catchError('B', noop);
 
-        var isDone = false;
+        var called = false;
         Task.get('A').start(function(err) {
-            isDone = true;
+            called = true;
         });
-        equal(isDone, false);
+        equal(called, false);
 
         setTimeout(function() {
-            equal(isDone, true);
+            equal(called, true);
             end();
         }, 50);
     });
+
 
     test('async test timeout', function(end) {
         taskModule.addAsyncTask('A', function(done) {
@@ -140,6 +144,7 @@ suite('Task:', function() {
             end();
         });
     });
+
 
     test('async test not timeout', function(end) {
         taskModule.addAsyncTask('A', function(done) {

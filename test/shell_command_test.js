@@ -61,9 +61,11 @@ suite('Shell command:', function() {
         fs.symlinkSync('main.txt', 'lib/linkmain');
     });
 
+
     teardown(function () {
         process.chdir(root);
     });
+
 
     test('listdir', function() {
         deepEqual(rusk.listdir(), ['TESTDATA.txt', 'bin', 'lib']);
@@ -78,6 +80,7 @@ suite('Shell command:', function() {
             rusk.ls(['*.foo', '*.bar']);
         }, 'rusk.listdir');
     });
+
 
     test('glob', function () {
         deepEqual(
@@ -95,6 +98,7 @@ suite('Shell command:', function() {
         rusk.glob(1);
     });
 
+
     test('mkdir', function() {
         rusk.mkdir('newdir');
         rusk.mkdir('newdir'); // not throws Error
@@ -110,6 +114,7 @@ suite('Shell command:', function() {
             rusk.mkdir('TESTDATA.txt');
         }, 'EEXIST');
     });
+
 
     test('move', function() {
         // move file
@@ -145,10 +150,12 @@ suite('Shell command:', function() {
         }, 'EINVAL');
     });
 
+
     test('move files', function() {
         rusk.move('lib/*.txt', 'bin');
         deepEqual(fs.readdirSync('bin'), ['app', 'main.txt', 'util.txt']);
     });
+
 
     test('copy', function() {
         rusk.copy('$main', 'lib/copy.txt');
@@ -172,6 +179,7 @@ suite('Shell command:', function() {
         }, 'ENOTDIR');
     });
 
+
     test('copy link', function() {
         fs.mkdirSync('pack');
         fs.symlinkSync('lib', 'linkdir');
@@ -188,11 +196,13 @@ suite('Shell command:', function() {
         equal(fs.readlinkSync('lib/linkmain'), 'lib');
     });
 
+
     test('copy files', function() {
         rusk.copy(['$main', '$util'], 'bin');
         equal(rusk.readFile('bin/main.txt'), 'main');
         equal(rusk.readFile('bin/util.txt'), 'util');
     });
+
 
     test('remove', function() {
         rusk.remove('lib/main.txt');
@@ -208,6 +218,7 @@ suite('Shell command:', function() {
         }, 'EISDIR');
     });
 
+
     test('removeRecursive', function() {
         rusk.removeRecursive('lib');
         assert(fs.existsSync('lib') === false);
@@ -216,6 +227,7 @@ suite('Shell command:', function() {
             rusk.removeRecursive('not_exists_dir');
         });
     });
+
 
     test('concat', function() {
         equal(rusk.concat(['$main', '$util']), 'main\nutil');
@@ -226,6 +238,7 @@ suite('Shell command:', function() {
         }, 'rusk.concat');
     });
 
+
     test('concatBuffer', function() {
         var result = rusk.concatBuffer(['$main', '$util']);
         assert.instanceOf(result, Buffer);
@@ -235,6 +248,7 @@ suite('Shell command:', function() {
             rusk.concatBuffer(['not_exists_file.*']);
         }, 'rusk.concat');
     });
+
 
     test('edit', function() {
         // $main == main
@@ -254,6 +268,7 @@ suite('Shell command:', function() {
         equal(rusk.readFile('$main'), 'foobar');
     });
 
+
     test('replace', function() {
         var contents = [];
         rusk.replace('TESTDATA.txt', /.+/g, function(match) {
@@ -268,10 +283,12 @@ suite('Shell command:', function() {
         deepEqual(contents, ['testdata', 'replaced']);
     });
 
+
     test('tempfile', function() {
         var tempfile = rusk.tempfile('temp');
         equal(rusk.readFile(tempfile), 'temp');
     });
+
 
     test('modified', function(/* done */) {
         equal(rusk.modified('$main'), true);
