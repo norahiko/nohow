@@ -1,6 +1,9 @@
 'use strict';
 
-Error.stackTraceLimit = 7; var taskModule = require('../lib/task.js');
+Error.stackTraceLimit = 7;
+var taskModule = require('../lib/task.js');
+var commands = require('../lib/commands.js');
+
 var Task = taskModule.Task;
 
 var assert = require('chai').assert;
@@ -33,8 +36,8 @@ suite('Task:', function() {
 
     test('sync task', function() {
         var taskA = new Task('A', ['B', 'C'], noop);
-        taskModule.addTask('B', noop);
-        taskModule.addTask('C', noop);
+        commands.task('B', noop);
+        commands.task('C', noop);
 
         var hasDone = false;
         taskA.start(function() {
@@ -46,8 +49,8 @@ suite('Task:', function() {
 
     test('async task', function(end) {
         var taskA = new Task('A', ['B', 'C'], noop);
-        taskModule.addAsyncTask('B', asyncCallback);
-        taskModule.addAsyncTask('C', asyncCallback);
+        commands.asyncTask('B', asyncCallback);
+        commands.asyncTask('C', asyncCallback);
 
         var called = false;
         function done(err) {
@@ -68,8 +71,8 @@ suite('Task:', function() {
         var taskA = new Task('A', ['B'], function() {
             throw new Error('A');
         });
-        taskModule.addTask('B', noop);
-        taskModule.addTask('C', function() {
+        commands.task('B', noop);
+        commands.task('C', function() {
             throw new Error('C');
         });
 
@@ -94,10 +97,10 @@ suite('Task:', function() {
         var taskA = new Task('A', ['B', 'C'], function() {
             throw new Error('A');
         });
-        taskModule.addAsyncTask('B', function(done) {
+        commands.asyncTask('B', function(done) {
             done('Error B');
         });
-        taskModule.addAsyncTask('C', function(done) {
+        commands.asyncTask('C', function(done) {
             done('Error C');
         });
 
@@ -117,16 +120,16 @@ suite('Task:', function() {
         var messages = [];
         var task = new Task('A', ['B'], noop);
 
-        taskModule.addTask('B', function() {
+        commands.task('B', function() {
             throw new Error('foo');
         });
 
-        taskModule.catchError('B', function(err) {
+        commands.catchError('B', function(err) {
             messages.push(err.message);
             throw new Error('bar');
         });
 
-        taskModule.catchError('B', function(err) {
+        commands.catchError('B', function(err) {
             messages.push(err.message);
             throw new Error('baz');
         });
@@ -140,11 +143,11 @@ suite('Task:', function() {
 
 
     test('catch error async', function(end) {
-        taskModule.addAsyncTask('A', ['B'], asyncCallback);
-        taskModule.addAsyncTask('B', function(done) {
+        commands.asyncTask('A', ['B'], asyncCallback);
+        commands.asyncTask('B', function(done) {
             done(new Error('foo'));
         });
-        taskModule.catchError('B', noop);
+        commands.catchError('B', noop);
 
         var called = false;
         Task.get('A').start(function(err) {
@@ -160,7 +163,7 @@ suite('Task:', function() {
 
 
     test('async test timeout', function(end) {
-        taskModule.addAsyncTask('A', function(done) {
+        commands.asyncTask('A', function(done) {
             // timeout: 1
             setTimeout(done, 100);
         });
@@ -173,7 +176,7 @@ suite('Task:', function() {
 
 
     test('async test not timeout', function(end) {
-        taskModule.addAsyncTask('A', function(done) {
+        commands.asyncTask('A', function(done) {
             // timeout: 100
             setImmediate(done);
         });
@@ -186,8 +189,8 @@ suite('Task:', function() {
 
 
     test('detect recursive task', function() {
-        taskModule.addTask('A', ['B'], noop);
-        taskModule.addTask('B', ['A'], noop);
+        commands.task('A', ['B'], noop);
+        commands.task('B', ['A'], noop);
 
         assert.throws(function() {
             Task.validate([]);
@@ -196,7 +199,7 @@ suite('Task:', function() {
 
 
     test('detect self recursive task', function() {
-        taskModule.addTask('A', ['A'], noop);
+        commands.task('A', ['A'], noop);
 
         assert.throws(function() {
             Task.validate([]);
