@@ -9,7 +9,7 @@ var deepEqual = assert.deepEqual;
 suite('Lazylib:', function() {
     test('lazylib', function() {
         assert.isDefined(helper.lazylib.glob, 'lazylib.glob');
-        assert.isDefined(helper.lazylib.Watch, 'lazylib.Watch');
+        assert.isDefined(helper.lazylib.Watcher, 'lazylib.Watcher');
     });
 });
 
