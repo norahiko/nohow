@@ -43,6 +43,27 @@ suite('Task:', function() {
         assert(hasDone);
     });
 
+
+    test('async task', function(end) {
+        var taskA = new Task('A', ['B', 'C'], noop);
+        taskModule.addAsyncTask('B', asyncCallback);
+        taskModule.addAsyncTask('C', asyncCallback);
+
+        var called = false;
+        function done(err) {
+            equal(err, null);
+            called = true;
+        }
+        taskA.start(done);
+        equal(called, false);
+
+        setImmediate(function() {
+            equal(called, true);
+            end();
+        });
+    });
+
+
     test('sync error task', function() {
         var taskA = new Task('A', ['B'], function() {
             throw new Error('A');
@@ -68,24 +89,29 @@ suite('Task:', function() {
         equal(errorMsg, 'C');
     });
 
-    test('async task', function(end) {
-        var taskA = new Task('A', ['B', 'C'], noop);
-        taskModule.addAsyncTask('B', asyncCallback);
-        taskModule.addAsyncTask('C', asyncCallback);
 
-        var isDone = false;
-        function done(err) {
-            equal(err, null);
-            isDone = true;
-        }
-        taskA.start(done);
-        equal(isDone, false);
-
-        setImmediate(function() {
-            equal(isDone, true);
-            end();
+    test('async error task', function(end) {
+        var taskA = new Task('A', ['B', 'C'], function() {
+            throw new Error('A');
         });
+        taskModule.addAsyncTask('B', function(done) {
+            done('Error B');
+        });
+        taskModule.addAsyncTask('C', function(done) {
+            done('Error C');
+        });
+
+        var errors = [];
+        taskA.start(function(err) {
+            errors.push(err);
+            if(errors.length === 2) {
+                deepEqual(errors, ['Error B', 'Error C']);
+                end();
+            }
+        });
+        equal(errors.length, 0);
     });
+
 
     test('catch error', function() {
         var messages = [];
@@ -156,5 +182,24 @@ suite('Task:', function() {
             equal(err, null);
             end();
         });
+    });
+
+
+    test('detect recursive task', function() {
+        taskModule.addTask('A', ['B'], noop);
+        taskModule.addTask('B', ['A'], noop);
+
+        assert.throws(function() {
+            Task.validate([]);
+        }, 'Recursive task');
+    });
+
+
+    test('detect self recursive task', function() {
+        taskModule.addTask('A', ['A'], noop);
+
+        assert.throws(function() {
+            Task.validate([]);
+        }, 'Recursive task');
     });
 });
