@@ -136,6 +136,10 @@ suite('Misc command:', function() {
 
     test('executable', function() {
         assert(rusk.executable('node'));
-        assert(!!!rusk.executable('not a binary file'));
+        assert(! rusk.executable('not a binary file'));
     });
+});
+
+
+suite('Watch command:', function() {
 });

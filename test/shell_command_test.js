@@ -1,5 +1,6 @@
 var fs = require('fs');
 var rusk = require('../lib/rusk.js');
+var taskModule = require('../lib/task.js');
 
 var assert = require('chai').assert;
 var equal = assert.strictEqual;
@@ -59,11 +60,13 @@ suite('Shell command:', function() {
         fs.writeFileSync('lib/main.txt', 'main');
         fs.writeFileSync('lib/util.txt', 'util');
         fs.symlinkSync('main.txt', 'lib/linkmain');
+        taskModule.reset();
     });
 
 
     teardown(function () {
         process.chdir(root);
+        taskModule.reset();
     });
 
 
@@ -295,5 +298,35 @@ suite('Shell command:', function() {
             //equal(rusk.modified('$main'), true);
             //done();
         //}, 1000);
+    });
+
+
+    test('watch', function(done) {
+        var watcher = rusk.watch('lib/*.txt', ['A', 'B', 'Done']);
+        var called = [];
+
+        rusk.task('A', function() {
+            called.push('A');
+        });
+
+        rusk.task('B', function() {
+            called.push('B');
+        });
+
+        rusk.task('Done', function() {
+            watcher.close();
+            deepEqual(called, ['A', 'B']);
+            var modified = watcher.getModifiedFiles();
+            equal(modified.length, 2);
+            equal(modified[0].slice(-12), 'lib/main.txt');
+            equal(modified[1].slice(-12), 'lib/util.txt');
+
+            equal(watcher.getModifiedFiles().length, 0);
+            done();
+        });
+
+        equal(watcher.files.length, 2);
+        rusk.append('lib/main.txt', 'add');
+        rusk.append('lib/util.txt', 'add');
     });
 });
