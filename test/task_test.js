@@ -67,6 +67,18 @@ suite('Task:', function() {
     });
 
 
+    test('runOnce command', function() {
+        var count = 0;
+        commands.task('A', function() {
+            count++;
+        });
+        commands.runOnce('A');
+        commands.runOnce('A');
+        commands.runOnce('A');
+        equal(count, 1);
+    });
+
+
     test('sync error task', function() {
         var taskA = new Task('A', ['B'], function() {
             throw new Error('A');
