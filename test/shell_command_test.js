@@ -302,18 +302,7 @@ suite('Shell command:', function() {
 
 
     test('watch', function(done) {
-        var watcher = jub.watch('lib/*.txt', ['A', 'B', 'Done']);
-        var called = [];
-
-        jub.task('A', function() {
-            called.push('A');
-        });
-
-        jub.task('B', function() {
-            called.push('B');
-        });
-
-        jub.task('Done', function() {
+        var watcher = jub.watch('lib/*.txt', ['A', 'B'], function() {
             watcher.close();
             deepEqual(called, ['A', 'B']);
             var modified = watcher.getModifiedFiles();
@@ -323,6 +312,16 @@ suite('Shell command:', function() {
 
             equal(watcher.getModifiedFiles().length, 0);
             done();
+        });
+
+        var called = [];
+
+        jub.task('A', function() {
+            called.push('A');
+        });
+
+        jub.task('B', function() {
+            called.push('B');
         });
 
         equal(watcher.files.length, 2);
