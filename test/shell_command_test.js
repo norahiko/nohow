@@ -1,11 +1,11 @@
 var fs = require('fs');
-var rusk = require('../lib/rusk.js');
+var jub = require('../lib/jub.js');
 var taskModule = require('../lib/task.js');
 
 var assert = require('chai').assert;
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
-var env = rusk.env;
+var env = jub.env;
 var root = process.cwd();
 
 
@@ -15,14 +15,14 @@ suite('Change directory command:', function() {
     });
 
     test('chdir', function () {
-        rusk.chdir('~');
+        jub.chdir('~');
         equal(process.cwd(), env.HOME);
     });
 
     test('pushd', function() {
-        rusk.pushd('test');
+        jub.pushd('test');
         assert.notEqual(process.cwd(), root);
-        rusk.popd();
+        jub.popd();
         equal(process.cwd(), root);
     });
 });
@@ -48,7 +48,7 @@ suite('Shell command:', function() {
                 └── util.txt
         */
         process.chdir(root);
-        rusk.removeRecursive('test/data');
+        jub.removeRecursive('test/data');
         fs.mkdirSync(testdir);
         process.chdir(testdir);
         fs.writeFileSync('TESTDATA.txt', 'testdata');
@@ -71,114 +71,114 @@ suite('Shell command:', function() {
 
 
     test('listdir', function() {
-        deepEqual(rusk.listdir(), ['TESTDATA.txt', 'bin', 'lib']);
-        assert.notDeepEqual(rusk.ls('~'), []);
-        deepEqual(rusk.ls('~'), rusk.ls('$HOME'));
+        deepEqual(jub.listdir(), ['TESTDATA.txt', 'bin', 'lib']);
+        assert.notDeepEqual(jub.ls('~'), []);
+        deepEqual(jub.ls('~'), jub.ls('$HOME'));
         deepEqual(
-            rusk.ls('*'),
+            jub.ls('*'),
             ['TESTDATA.txt', 'bin/app', 'lib/linkmain', 'lib/main.txt', 'lib/util.txt']
         );
 
         assert.throws(function() {
-            rusk.ls(['*.foo', '*.bar']);
-        }, 'rusk.listdir');
+            jub.ls(['*.foo', '*.bar']);
+        }, 'jub.listdir');
     });
 
 
     test('glob', function () {
         deepEqual(
-            rusk.glob('**/*.txt'),
+            jub.glob('**/*.txt'),
             ['TESTDATA.txt', 'lib/main.txt', 'lib/util.txt']
         );
         deepEqual(
-            rusk.glob('**/cat.jpg'),
+            jub.glob('**/cat.jpg'),
             []
         );
         deepEqual(
-            rusk.glob(['bin/*', 'TESTDATA.*']),
+            jub.glob(['bin/*', 'TESTDATA.*']),
             ['bin/app', 'TESTDATA.txt']
         );
-        rusk.glob(1);
+        jub.glob(1);
     });
 
 
     test('mkdir', function() {
-        rusk.mkdir('newdir');
-        rusk.mkdir('newdir'); // not throws Error
+        jub.mkdir('newdir');
+        jub.mkdir('newdir'); // not throws Error
         assert(fs.statSync('newdir').isDirectory());
 
         assert.throws(function() {
             // not enough arguments
-            rusk.mkdir();
-        }, 'rusk.expand');
+            jub.mkdir();
+        }, 'jub.expand');
 
         assert.throws(function() {
             // already a file exists (not directory)
-            rusk.mkdir('TESTDATA.txt');
+            jub.mkdir('TESTDATA.txt');
         }, 'EEXIST');
     });
 
 
     test('move', function() {
         // move file
-        rusk.move('$main', 'moved.txt');
+        jub.move('$main', 'moved.txt');
         equal(fs.readFileSync('moved.txt', 'utf8'), 'main');
-        assert(rusk.notExists('$main'));
+        assert(jub.notExists('$main'));
         // move file into directory
-        rusk.move('moved.txt', 'bin');
+        jub.move('moved.txt', 'bin');
         equal(fs.readFileSync('bin/moved.txt', 'utf8'), 'main');
-        assert(rusk.notExists('moved.txt'));
+        assert(jub.notExists('moved.txt'));
         // move directory
-        rusk.move('bin', 'lib');
+        jub.move('bin', 'lib');
         equal(fs.readFileSync('lib/bin/moved.txt', 'utf8'), 'main');
-        assert(rusk.notExists('bin'));
+        assert(jub.notExists('bin'));
 
         assert.throws(function() {
             // not enough arguments
-            rusk.move('TESTDATA.txt');
-        }, 'rusk.expand');
+            jub.move('TESTDATA.txt');
+        }, 'jub.expand');
 
         assert.throws(function () {
             // source is not exists
-            rusk.move('not_exists_file', 'foo');
-        }, 'rusk.move');
+            jub.move('not_exists_file', 'foo');
+        }, 'jub.move');
 
         assert.throws(function () {
             // move current directory
-            rusk.move('./', 'lib');
+            jub.move('./', 'lib');
         }, 'EBUSY');
         assert.throws(function () {
             // move directory into self
-            rusk.move('lib', 'lib');
+            jub.move('lib', 'lib');
         }, 'EINVAL');
     });
 
 
     test('move files', function() {
-        rusk.move('lib/*.txt', 'bin');
+        jub.move('lib/*.txt', 'bin');
         deepEqual(fs.readdirSync('bin'), ['app', 'main.txt', 'util.txt']);
     });
 
 
     test('copy', function() {
-        rusk.copy('$main', 'lib/copy.txt');
-        equal(rusk.readFile('lib/copy.txt'), 'main');
-        rusk.copy('lib', 'copylib');
-        equal(rusk.readFile('copylib/main.txt'), 'main');
-        assert(rusk.exists('$main'));
-        assert(rusk.exists('$util'));
+        jub.copy('$main', 'lib/copy.txt');
+        equal(jub.readFile('lib/copy.txt'), 'main');
+        jub.copy('lib', 'copylib');
+        equal(jub.readFile('copylib/main.txt'), 'main');
+        assert(jub.exists('$main'));
+        assert(jub.exists('$util'));
 
-        rusk.copy('lib', 'copylib');
-        equal(rusk.readFile('copylib/lib/main.txt'), 'main');
+        jub.copy('lib', 'copylib');
+        equal(jub.readFile('copylib/lib/main.txt'), 'main');
 
         assert.throws(function() {
             // not enough arguments
-            rusk.copy('TESTDATA.txt');
-        }, 'rusk.expand');
+            jub.copy('TESTDATA.txt');
+        }, 'jub.expand');
 
         assert.throws(function() {
             // copy directory to file
-            rusk.copy('lib', 'TESTDATA.txt');
+            jub.copy('lib', 'TESTDATA.txt');
         }, 'ENOTDIR');
     });
 
@@ -187,7 +187,7 @@ suite('Shell command:', function() {
         fs.mkdirSync('pack');
         fs.symlinkSync('lib', 'linkdir');
 
-        rusk.copy(['bin', 'lib', 'linkdir'], 'pack');
+        jub.copy(['bin', 'lib', 'linkdir'], 'pack');
         assert(fs.lstatSync('pack/lib/linkmain').isSymbolicLink());
         equal(fs.readFileSync('pack/lib/linkmain', 'utf8'), 'main');
 
@@ -195,86 +195,86 @@ suite('Shell command:', function() {
         equal(fs.readFileSync('pack/linkdir/main.txt', 'utf8'), 'main');
 
         // replace link
-        rusk.copy('linkdir', 'lib/linkmain');
+        jub.copy('linkdir', 'lib/linkmain');
         equal(fs.readlinkSync('lib/linkmain'), 'lib');
     });
 
 
     test('copy files', function() {
-        rusk.copy(['$main', '$util'], 'bin');
-        equal(rusk.readFile('bin/main.txt'), 'main');
-        equal(rusk.readFile('bin/util.txt'), 'util');
+        jub.copy(['$main', '$util'], 'bin');
+        equal(jub.readFile('bin/main.txt'), 'main');
+        equal(jub.readFile('bin/util.txt'), 'util');
     });
 
 
     test('remove', function() {
-        rusk.remove('lib/main.txt');
+        jub.remove('lib/main.txt');
         assert(fs.existsSync('lib/main.txt') === false);
 
         assert.doesNotThrow(function() {
-            rusk.remove('not_exists_file');
+            jub.remove('not_exists_file');
         });
 
         assert.throws(function() {
             // cannot remove directory
-            rusk.remove('lib');
+            jub.remove('lib');
         }, 'EISDIR');
     });
 
 
     test('removeRecursive', function() {
-        rusk.removeRecursive('lib');
+        jub.removeRecursive('lib');
         assert(fs.existsSync('lib') === false);
 
         assert.doesNotThrow(function() {
-            rusk.removeRecursive('not_exists_dir');
+            jub.removeRecursive('not_exists_dir');
         });
     });
 
 
     test('concat', function() {
-        equal(rusk.concat(['$main', '$util']), 'main\nutil');
-        equal(rusk.concat(['$main', '$util'], '\n-----\n'), 'main\n-----\nutil');
+        equal(jub.concat(['$main', '$util']), 'main\nutil');
+        equal(jub.concat(['$main', '$util'], '\n-----\n'), 'main\n-----\nutil');
 
         assert.throws(function() {
-            rusk.concat(['not_exists_file.*']);
-        }, 'rusk.concat');
+            jub.concat(['not_exists_file.*']);
+        }, 'jub.concat');
     });
 
 
     test('concatBuffer', function() {
-        var result = rusk.concatBuffer(['$main', '$util']);
+        var result = jub.concatBuffer(['$main', '$util']);
         assert.instanceOf(result, Buffer);
         equal(result.toString(), 'mainutil');
 
         assert.throws(function() {
-            rusk.concatBuffer(['not_exists_file.*']);
-        }, 'rusk.concat');
+            jub.concatBuffer(['not_exists_file.*']);
+        }, 'jub.concat');
     });
 
 
     test('append', function() {
-        rusk.append('$main', '1');
-        rusk.append('$main', '2');
-        equal(rusk.readFile('$main'), 'main12');
+        jub.append('$main', '1');
+        jub.append('$main', '2');
+        equal(jub.readFile('$main'), 'main12');
     });
 
 
     test('prepend', function() {
-        rusk.prepend('$main', '2');
-        rusk.prepend('$main', '1');
-        equal(rusk.readFile('$main'), '12main');
+        jub.prepend('$main', '2');
+        jub.prepend('$main', '1');
+        equal(jub.readFile('$main'), '12main');
     });
 
 
     test('replace', function() {
         var contents = [];
-        rusk.replace('TESTDATA.txt', /.+/g, function(match) {
+        jub.replace('TESTDATA.txt', /.+/g, function(match) {
             contents.push(match);
             return 'replaced';
         });
 
-        rusk.replace('TESTDATA.txt', /replaced/g, function (match) {
+        jub.replace('TESTDATA.txt', /replaced/g, function (match) {
             contents.push(match);
             return 'testdata';
         });
@@ -283,37 +283,37 @@ suite('Shell command:', function() {
 
 
     test('tempfile', function() {
-        var tempfile = rusk.tempfile('temp');
-        equal(rusk.readFile(tempfile), 'temp');
+        var tempfile = jub.tempfile('temp');
+        equal(jub.readFile(tempfile), 'temp');
     });
 
 
     test('modified', function(/* done */) {
-        equal(rusk.modified('$main'), true);
-        equal(rusk.modified('$main'), false);
+        equal(jub.modified('$main'), true);
+        equal(jub.modified('$main'), false);
 
         // this test is too slow
         //setTimeout(function() {
-            //rusk.writeFile('$main', 'changed');
-            //equal(rusk.modified('$main'), true);
+            //jub.writeFile('$main', 'changed');
+            //equal(jub.modified('$main'), true);
             //done();
         //}, 1000);
     });
 
 
     test('watch', function(done) {
-        var watcher = rusk.watch('lib/*.txt', ['A', 'B', 'Done']);
+        var watcher = jub.watch('lib/*.txt', ['A', 'B', 'Done']);
         var called = [];
 
-        rusk.task('A', function() {
+        jub.task('A', function() {
             called.push('A');
         });
 
-        rusk.task('B', function() {
+        jub.task('B', function() {
             called.push('B');
         });
 
-        rusk.task('Done', function() {
+        jub.task('Done', function() {
             watcher.close();
             deepEqual(called, ['A', 'B']);
             var modified = watcher.getModifiedFiles();
@@ -326,7 +326,7 @@ suite('Shell command:', function() {
         });
 
         equal(watcher.files.length, 2);
-        rusk.append('lib/main.txt', 'add');
-        rusk.append('lib/util.txt', 'add');
+        jub.append('lib/main.txt', 'add');
+        jub.append('lib/util.txt', 'add');
     });
 });

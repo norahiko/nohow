@@ -14,15 +14,15 @@ suite('Lazylib:', function() {
 });
 
 
-suite('Rusk system helper:', function() {
+suite('Jub system helper:', function() {
     test('parseArgs', function() {
         var opts = helper.parseArgs([
-            '-f', 'ruskfile.js', '-x', 'foo,bar', '-x', 'rusk-baz',
+            '-f', 'jubfile.js', '-x', 'foo,bar', '-x', 'jub-baz',
             'taskA', 'taskB', '--help', '-T'
         ]);
 
-        deepEqual(opts.ruskfilePath, 'ruskfile.js');
-        deepEqual(opts.excludePlugins, ['rusk-foo', 'rusk-bar', 'rusk-baz']);
+        deepEqual(opts.jubfilePath, 'jubfile.js');
+        deepEqual(opts.excludePlugins, ['jub-foo', 'jub-bar', 'jub-baz']);
         deepEqual(opts.tasks, ['taskA', 'taskB']);
         deepEqual(opts.helpFlag, true);
         deepEqual(opts.taskListFlag, true);

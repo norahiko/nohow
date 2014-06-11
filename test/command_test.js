@@ -1,12 +1,12 @@
 'use strict';
 
 Error.stackTraceLimit = 7;
-var rusk = require('../lib/rusk.js');
+var jub = require('../lib/jub.js');
 var http = require('http');
 
 var assert = require('chai').assert;
 var equal = assert.strictEqual;
-var env = rusk.env;
+var env = jub.env;
 var root = process.cwd();
 
 
@@ -29,76 +29,76 @@ suite('Expand command:', function () {
 
 
     test('expand env', function () {
-        equal(rusk.expand('$key'), 'value');
-        equal(rusk.expand('${key}'), 'value');
-        equal(rusk.expand('/a/$key/b'), '/a/value/b');
-        equal(rusk.expand('$cwd'), '/test');
-        equal(rusk.expand('$file'), 'dir/file.js');
-        equal(rusk.expand('~'), process.env.HOME);
+        equal(jub.expand('$key'), 'value');
+        equal(jub.expand('${key}'), 'value');
+        equal(jub.expand('/a/$key/b'), '/a/value/b');
+        equal(jub.expand('$cwd'), '/test');
+        equal(jub.expand('$file'), 'dir/file.js');
+        equal(jub.expand('~'), process.env.HOME);
     });
 
 
     test('expand attributes', function() {
-        equal(rusk.expand('$file.length'), '11');
-        equal(rusk.expand('${file.length}'), '11');
-        equal(rusk.expand('$object.key.2.0'), 'piyo');
-        equal(rusk.expand('${object.path:abs}'), '/test/path.obj');
+        equal(jub.expand('$file.length'), '11');
+        equal(jub.expand('${file.length}'), '11');
+        equal(jub.expand('$object.key.2.0'), 'piyo');
+        equal(jub.expand('${object.path:abs}'), '/test/path.obj');
     });
 
 
     test('expand filter', function() {
         if(process.platform !== 'win32') {
-            equal(rusk.expand('$file:abs'), '/test/dir/file.js');
-            equal(rusk.expand('${file:abs}'), '/test/dir/file.js');
+            equal(jub.expand('$file:abs'), '/test/dir/file.js');
+            equal(jub.expand('${file:abs}'), '/test/dir/file.js');
         }
-        equal(rusk.expand('$file:dir'), 'dir');
-        equal(rusk.expand('$file:base'), 'file.js');
-        equal(rusk.expand('$file:rmext'), 'dir/file');
-        equal(rusk.expand('$0:digit2', 0), '00');
-        equal(rusk.expand('$0:digit2', 1), '01');
-        equal(rusk.expand('$0:digit2', -1), '-01');
-        equal(rusk.expand('$0:digit2', 1.234), '01');
-        equal(rusk.expand('$0:digit2', 1.9), '01');
-        equal(rusk.expand('$0:digit2', -1.9), '-01');
-        equal(rusk.expand('$0:digit2', 10), '10');
-        equal(rusk.expand('$0:digit2', -10), '-10');
-        equal(rusk.expand('$0:digit2', 100), '100');
-        equal(rusk.expand('$0:digit2', -100), '-100');
-        equal(rusk.expand('$0:digit6', 123), '000123');
+        equal(jub.expand('$file:dir'), 'dir');
+        equal(jub.expand('$file:base'), 'file.js');
+        equal(jub.expand('$file:rmext'), 'dir/file');
+        equal(jub.expand('$0:digit2', 0), '00');
+        equal(jub.expand('$0:digit2', 1), '01');
+        equal(jub.expand('$0:digit2', -1), '-01');
+        equal(jub.expand('$0:digit2', 1.234), '01');
+        equal(jub.expand('$0:digit2', 1.9), '01');
+        equal(jub.expand('$0:digit2', -1.9), '-01');
+        equal(jub.expand('$0:digit2', 10), '10');
+        equal(jub.expand('$0:digit2', -10), '-10');
+        equal(jub.expand('$0:digit2', 100), '100');
+        equal(jub.expand('$0:digit2', -100), '-100');
+        equal(jub.expand('$0:digit6', 123), '000123');
     });
 
 
     test('expand arguments', function() {
-        equal(rusk.expand('Hello, $0', 'RuskJS'), 'Hello, RuskJS');
-        equal(rusk.expand('$0$1 is not $0', 'Java', 'Script'), 'JavaScript is not Java');
+        equal(jub.expand('Hello, $0', 'jubJS'), 'Hello, jubJS');
+        equal(jub.expand('$0$1 is not $0', 'Java', 'Script'), 'JavaScript is not Java');
     });
 
 
     test('not expanded', function () {
-        equal(rusk.expand('${key'), '${key');
+        equal(jub.expand('${key'), '${key');
 
     });
 
 
     test('expand error', function() {
         assert.throws(function() {
-            rusk.expand('$undefined');
+            jub.expand('$undefined');
         });
 
         assert.throws(function() {
-            rusk.expand('$0');
+            jub.expand('$0');
         });
 
         assert.throws(function() {
-            rusk.expand('$1', 'foo');
+            jub.expand('$1', 'foo');
         });
 
         assert.throws(function() {
-            rusk.expand('$object.undefined');
+            jub.expand('$object.undefined');
         });
 
         assert.throws(function() {
-            rusk.expand('$0:undefined_filter', 'value');
+            jub.expand('$0:undefined_filter', 'value');
         });
     });
 });
@@ -111,8 +111,8 @@ suite('Misc command:', function() {
 
 
     test('defined', function() {
-        for(var name in rusk.commands) {
-            assert.isDefined(rusk.commands[name], 'commands.' + name + ' is undefined');
+        for(var name in jub.commands) {
+            assert.isDefined(jub.commands[name], 'commands.' + name + ' is undefined');
         }
     });
 
@@ -124,7 +124,7 @@ suite('Misc command:', function() {
             console.log = function() {
                 output = arguments;
             };
-            rusk.trace('ok');
+            jub.trace('ok');
         } finally {
             console.log = log;
         }
@@ -136,8 +136,8 @@ suite('Misc command:', function() {
 
 
     test('executable', function() {
-        assert(rusk.executable('node'));
-        assert(! rusk.executable('not a binary file'));
+        assert(jub.executable('node'));
+        assert(! jub.executable('not a binary file'));
     });
 });
 
@@ -148,7 +148,7 @@ suite('WebServer', function() {
     setup(function (done) {
         env.PORT = 7878;
         env.HOST = 'localhost';
-        server = rusk.webserver({
+        server = jub.webserver({
             documentRoot: root,
             listenCallback: done,
         });

@@ -1,25 +1,25 @@
 {
-  "name": "rusk",
+  "name": "jub",
   "version": "0.0.0",
   "description": "The task runner with synchronous api",
-  "main": "lib/__rusk.js",
+  "main": "lib/__jub.js",
   "scripts": {
     "build": "node-gyp rebuild",
     "test": "mocha -u tdd "
   },
   "bin": {
-      "rusk": "./bin/rusk_bin.js"
+      "jub": "./bin/jub_bin.js"
   },
   "author": "norahiko",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/norahiko/rusk.git"
+    "url": "git://github.com/norahiko/jub.git"
   },
   "bugs": {
-    "url": "https://github.com/norahiko/rusk/issues"
+    "url": "https://github.com/norahiko/jub/issues"
   },
-  "homepage": "https://github.com/norahiko/rusk",
+  "homepage": "https://github.com/norahiko/jub",
   "dependencies": {
     "nan": "^1.1.0",
     "glob": "^3.2.9"
