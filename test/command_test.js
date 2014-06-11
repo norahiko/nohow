@@ -2,6 +2,7 @@
 
 Error.stackTraceLimit = 7;
 var rusk = require('../lib/rusk.js');
+var http = require('http');
 
 var assert = require('chai').assert;
 var equal = assert.strictEqual;
@@ -141,5 +142,70 @@ suite('Misc command:', function() {
 });
 
 
-suite('Watch command:', function() {
+suite('WebServer', function() {
+    var server;
+
+    setup(function (done) {
+        env.PORT = 7878;
+        env.HOST = 'localhost';
+        server = rusk.webserver({
+            documentRoot: root,
+            listenCallback: done,
+        });
+    });
+
+
+    teardown(function (done) {
+        server.close(done);
+    });
+
+
+    test('root dir', function(done) {
+        http.get('http://localhost:7878/', function(res) {
+            equal(res.statusCode, 200);
+            equal(res.headers['content-type'], 'text/html');
+            res.resume();
+            done();
+        });
+    });
+
+
+    test('lib dir', function(done) {
+        http.get('http://localhost:7878/lib/', function(res) {
+            equal(res.statusCode, 200);
+            equal(res.headers['content-type'], 'text/html');
+            res.resume();
+            done();
+        });
+    });
+
+
+    test('redirect', function(done) {
+        http.get('http://localhost:7878/lib', function(res) {
+            equal(res.statusCode, 301);
+            equal(res.headers.location, '/lib/');
+            res.resume();
+            done();
+        });
+    });
+
+
+    test('200', function(done) {
+        http.get('http://localhost:7878/LICENSE', function(res) {
+            equal(res.statusCode, 200);
+            res.on('data', function(data) {
+                equal(data.toString().slice(0, 15), 'The MIT License');
+                done();
+            });
+        });
+    });
+
+
+    test('404', function(done) {
+        http.get('http://localhost:7878/not_exists_file', function(res) {
+            res.resume();
+            equal(res.statusCode, 404);
+            done();
+        });
+    });
 });
