@@ -107,6 +107,9 @@ suite('Shell command:', function() {
         jub.mkdir('newdir'); // not throws Error
         assert(fs.statSync('newdir').isDirectory());
 
+        jub.mkdir('a/b/c/d/e');
+        assert(fs.statSync('a/b/c/d/e').isDirectory());
+
         assert.throws(function() {
             // not enough arguments
             jub.mkdir();
@@ -302,18 +305,6 @@ suite('Shell command:', function() {
 
 
     test('watch', function(done) {
-        var watcher = jub.watch('lib/*.txt', ['A', 'B'], function() {
-            watcher.close();
-            deepEqual(called, ['A', 'B']);
-            var modified = watcher.getModifiedFiles();
-            equal(modified.length, 2);
-            equal(modified[0].slice(-12), 'lib/main.txt');
-            equal(modified[1].slice(-12), 'lib/util.txt');
-
-            equal(watcher.getModifiedFiles().length, 0);
-            done();
-        });
-
         var called = [];
 
         jub.task('A', function() {
@@ -324,8 +315,23 @@ suite('Shell command:', function() {
             called.push('B');
         });
 
+        var watcher = jub.watch('lib/*.txt', ['A', 'B'], function() {
+            watcher.close();
+            deepEqual(called, ['A', 'B']);
+            var modified = watcher.getModifiedFiles();
+
+            equal(modified.length, 2);
+            equal(modified[0].charAt(0), '/');
+            equal(modified[0].slice(-12), 'lib/main.txt');
+            equal(modified[1].slice(-12), 'lib/util.txt');
+
+            equal(watcher.getModifiedFiles().length, 0);
+            done();
+        });
+
         equal(watcher.files.length, 2);
-        jub.append('lib/main.txt', 'add');
-        jub.append('lib/util.txt', 'add');
+
+        jub.append('lib/main.txt', 'append text');
+        jub.append('lib/util.txt', 'append text');
     });
 });
