@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/norahiko/jub",
   "dependencies": {
-    "nan": "^1.1.0",
     "glob": "^3.2.9"
   },
   "devDependencies": {
