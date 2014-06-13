@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "backport",
-      "sources": [ "src/backport.cc" ],
+      "target_name": "polyfill",
+      "sources": [ "src/polyfill.cc" ],
     }
   ]
 }
