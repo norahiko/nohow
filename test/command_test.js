@@ -118,15 +118,15 @@ suite('Misc command:', function() {
 
 
     test('trace', function() {
-        var output;
-        var log = console.log;
+        var output = [];
+        var error = console.error;
         try {
-            console.log = function() {
+            console.error = function() {
                 output = arguments;
             };
             jub.trace('ok');
         } finally {
-            console.log = log;
+            console.error = error;
         }
 
         equal(output.length, 2);
