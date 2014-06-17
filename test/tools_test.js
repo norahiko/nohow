@@ -10,7 +10,7 @@ var env = jub.env;
 var root = process.cwd();
 
 
-suite('Expand command:', function () {
+suite('Expand tool:', function () {
     env.key = 'value';
     env.file = 'dir/file.js';
     env.object = {key: [1, 2, ['piyo']], path: 'path.obj'};
@@ -104,15 +104,15 @@ suite('Expand command:', function () {
 });
 
 
-suite('Misc command:', function() {
+suite('Misc tool:', function() {
     setup(function () {
         process.chdir(root);
     });
 
 
     test('defined', function() {
-        for(var name in jub.commands) {
-            assert.isDefined(jub.commands[name], 'commands.' + name + ' is undefined');
+        for(var name in jub.tools) {
+            assert.isDefined(jub.tools[name], 'tools.' + name + ' is undefined');
         }
     });
 
@@ -130,7 +130,7 @@ suite('Misc command:', function() {
         }
 
         equal(output.length, 2);
-        assert(/command_test\.js/.test(output[0]));
+        assert(/tools_test\.js/.test(output[0]));
         assert(output[1], 'ok');
     });
 

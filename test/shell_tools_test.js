@@ -9,7 +9,7 @@ var env = jub.env;
 var root = process.cwd();
 
 
-suite('Change directory command:', function() {
+suite('Change directory tools:', function() {
     setup(function () {
         process.chdir(root);
     });
@@ -28,7 +28,7 @@ suite('Change directory command:', function() {
 });
 
 
-suite('Shell command:', function() {
+suite('Shell tools:', function() {
     env.main = 'lib/main.txt';
     env.util = 'lib/util.txt';
     var testdir = 'test/data';

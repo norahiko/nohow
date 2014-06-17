@@ -2,7 +2,7 @@
 
 Error.stackTraceLimit = 7;
 var taskModule = require('../lib/task.js');
-var commands = require('../lib/commands.js');
+var jub = require('../lib/jub.js');
 
 var Task = taskModule.Task;
 
@@ -36,8 +36,8 @@ suite('Task:', function() {
 
     test('sync task', function() {
         var taskA = new Task('A', ['B', 'C'], noop);
-        commands.task('B', noop);
-        commands.task('C', noop);
+        jub.task('B', noop);
+        jub.task('C', noop);
 
         var hasDone = false;
         taskA.start(function() {
@@ -49,8 +49,8 @@ suite('Task:', function() {
 
     test('async task', function(end) {
         var taskA = new Task('A', ['B', 'C'], noop);
-        commands.asyncTask('B', asyncCallback);
-        commands.asyncTask('C', asyncCallback);
+        jub.asyncTask('B', asyncCallback);
+        jub.asyncTask('C', asyncCallback);
 
         var called = false;
         function done(err) {
@@ -67,14 +67,14 @@ suite('Task:', function() {
     });
 
 
-    test('runOnce command', function() {
+    test('runOnce tool', function() {
         var count = 0;
-        commands.task('A', function() {
+        jub.task('A', function() {
             count++;
         });
-        commands.runOnce('A');
-        commands.runOnce('A');
-        commands.runOnce('A');
+        jub.runOnce('A');
+        jub.runOnce('A');
+        jub.runOnce('A');
         equal(count, 1);
     });
 
@@ -83,8 +83,8 @@ suite('Task:', function() {
         var taskA = new Task('A', ['B'], function() {
             throw new Error('A');
         });
-        commands.task('B', noop);
-        commands.task('C', function() {
+        jub.task('B', noop);
+        jub.task('C', function() {
             throw new Error('C');
         });
 
@@ -109,10 +109,10 @@ suite('Task:', function() {
         var taskA = new Task('A', ['B', 'C'], function() {
             throw new Error('A');
         });
-        commands.asyncTask('B', function(done) {
+        jub.asyncTask('B', function(done) {
             done('Error B');
         });
-        commands.asyncTask('C', function(done) {
+        jub.asyncTask('C', function(done) {
             done('Error C');
         });
 
@@ -132,16 +132,16 @@ suite('Task:', function() {
         var messages = [];
         var task = new Task('A', ['B'], noop);
 
-        commands.task('B', function() {
+        jub.task('B', function() {
             throw new Error('foo');
         });
 
-        commands.catchError('B', function(err) {
+        jub.catchError('B', function(err) {
             messages.push(err.message);
             throw new Error('bar');
         });
 
-        commands.catchError('B', function(err) {
+        jub.catchError('B', function(err) {
             messages.push(err.message);
             throw new Error('baz');
         });
@@ -155,11 +155,11 @@ suite('Task:', function() {
 
 
     test('catch error async', function(end) {
-        commands.asyncTask('A', ['B'], asyncCallback);
-        commands.asyncTask('B', function(done) {
+        jub.asyncTask('A', ['B'], asyncCallback);
+        jub.asyncTask('B', function(done) {
             done(new Error('foo'));
         });
-        commands.catchError('B', noop);
+        jub.catchError('B', noop);
 
         var called = false;
         Task.get('A').start(function(err) {
@@ -175,7 +175,7 @@ suite('Task:', function() {
 
 
     test('async test timeout', function(end) {
-        commands.asyncTask('A', function(done) {
+        jub.asyncTask('A', function(done) {
             // timeout: 1
             setTimeout(done, 100);
         });
@@ -188,7 +188,7 @@ suite('Task:', function() {
 
 
     test('async test not timeout', function(end) {
-        commands.asyncTask('A', function(done) {
+        jub.asyncTask('A', function(done) {
             // timeout: 100
             setImmediate(done);
         });
@@ -201,8 +201,8 @@ suite('Task:', function() {
 
 
     test('detect recursive task', function() {
-        commands.task('A', ['B'], noop);
-        commands.task('B', ['A'], noop);
+        jub.task('A', ['B'], noop);
+        jub.task('B', ['A'], noop);
 
         assert.throws(function() {
             Task.validate([]);
@@ -211,7 +211,7 @@ suite('Task:', function() {
 
 
     test('detect self recursive task', function() {
-        commands.task('A', ['A'], noop);
+        jub.task('A', ['A'], noop);
 
         assert.throws(function() {
             Task.validate([]);
