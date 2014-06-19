@@ -48,6 +48,9 @@ suite('Task:', function() {
 
 
     test('async task', function(end) {
+        function asyncCallback(done) {
+            done();
+        }
         var taskA = new Task('A', ['B', 'C'], noop);
         jub.asyncTask('B', asyncCallback);
         jub.asyncTask('C', asyncCallback);
@@ -60,10 +63,10 @@ suite('Task:', function() {
         taskA.start(done);
         equal(called, false);
 
-        setImmediate(function() {
+        setTimeout(function() {
             equal(called, true);
             end();
-        });
+        }, 30);
     });
 
 
@@ -106,23 +109,32 @@ suite('Task:', function() {
 
 
     test('async error task', function(end) {
-        var taskA = new Task('A', ['B', 'C'], function() {
-            throw new Error('A');
+        var calledA = false;
+        var calledB = false;
+        var calledC = false;
+
+        var taskA = jub.asyncTask('A', ['B', 'C'], function(done) {
+            calledA = true;
+            done('Error A');
         });
+
         jub.asyncTask('B', function(done) {
+            calledB = true;
             done('Error B');
         });
+
         jub.asyncTask('C', function(done) {
+            calledC = true;
             done('Error C');
         });
 
         var errors = [];
         taskA.start(function(err) {
-            errors.push(err);
-            if(errors.length === 2) {
-                deepEqual(errors, ['Error B', 'Error C']);
-                end();
-            }
+            equal(err, 'Error B');
+            equal(calledA, false);
+            equal(calledB, true);
+            equal(calledC, false);
+            end();
         });
         equal(errors.length, 0);
     });
