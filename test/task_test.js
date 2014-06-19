@@ -198,23 +198,4 @@ suite('Task:', function() {
             end();
         });
     });
-
-
-    test('detect recursive task', function() {
-        jub.task('A', ['B'], noop);
-        jub.task('B', ['A'], noop);
-
-        assert.throws(function() {
-            Task.validate([]);
-        }, 'Recursive task');
-    });
-
-
-    test('detect self recursive task', function() {
-        jub.task('A', ['A'], noop);
-
-        assert.throws(function() {
-            Task.validate([]);
-        }, 'Recursive task');
-    });
 });
