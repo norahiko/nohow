@@ -281,8 +281,8 @@ suite('Shell tools:', function() {
 
 
     test('modified', function(/* done */) {
-        equal(jub.modified('$main'), true);
-        equal(jub.modified('$main'), false);
+        equal(jub.modified('*/*.txt'), true);
+        equal(jub.modified('*/*.txt'), false);
 
         // this test is too slow
         //setTimeout(function() {
