@@ -165,14 +165,14 @@ suite('Shell tools:', function() {
 
     test('copy', function() {
         jub.copy('$main', 'lib/copy.txt');
-        equal(jub.readFile('lib/copy.txt'), 'main');
+        equal(jub.readFile('lib/copy.txt', 'utf8'), 'main');
         jub.copy('lib', 'copylib');
-        equal(jub.readFile('copylib/main.txt'), 'main');
+        equal(jub.readFile('copylib/main.txt', 'utf8'), 'main');
         assert(jub.exists('$main'));
         assert(jub.exists('$util'));
 
         jub.copy('lib', 'copylib');
-        equal(jub.readFile('copylib/lib/main.txt'), 'main');
+        equal(jub.readFile('copylib/lib/main.txt', 'utf8'), 'main');
 
         assert.throws(function() {
             // not enough arguments
@@ -205,8 +205,8 @@ suite('Shell tools:', function() {
 
     test('copy files', function() {
         jub.copy(['$main', '$util'], 'bin');
-        equal(jub.readFile('bin/main.txt'), 'main');
-        equal(jub.readFile('bin/util.txt'), 'util');
+        equal(jub.readFile('bin/main.txt').toString(), 'main');
+        equal(jub.readFile('bin/util.txt').toString(), 'util');
     });
 
 
@@ -236,8 +236,8 @@ suite('Shell tools:', function() {
 
 
     test('concat', function() {
-        equal(jub.concat(['$main', '$util']), 'main\nutil');
-        equal(jub.concat(['$main', '$util'], '\n-----\n'), 'main\n-----\nutil');
+        equal(jub.concat(['$main', '$util'], '\n').toString(), 'main\nutil');
+        equal(jub.concat(['$main', '$util'], '\n-----\n').toString(), 'main\n-----\nutil');
 
         assert.throws(function() {
             jub.concat(['not_exists_file.*']);
@@ -245,28 +245,17 @@ suite('Shell tools:', function() {
     });
 
 
-    test('concatBuffer', function() {
-        var result = jub.concatBuffer(['$main', '$util']);
-        assert.instanceOf(result, Buffer);
-        equal(result.toString(), 'mainutil');
-
-        assert.throws(function() {
-            jub.concatBuffer(['not_exists_file.*']);
-        }, 'jub.concat');
-    });
-
-
     test('append', function() {
         jub.append('$main', '1');
         jub.append('$main', '2');
-        equal(jub.readFile('$main'), 'main12');
+        equal(jub.readFile('$main').toString(), 'main12');
     });
 
 
     test('prepend', function() {
         jub.prepend('$main', '2');
         jub.prepend('$main', '1');
-        equal(jub.readFile('$main'), '12main');
+        equal(jub.readFile('$main').toString(), '12main');
     });
 
 
@@ -287,7 +276,7 @@ suite('Shell tools:', function() {
 
     test('tempfile', function() {
         var tempfile = jub.tempfile('temp');
-        equal(jub.readFile(tempfile), 'temp');
+        equal(jub.readFile(tempfile, 'utf8'), 'temp');
     });
 
 
