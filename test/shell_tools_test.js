@@ -293,7 +293,7 @@ suite('Shell tools:', function() {
     });
 
 
-    test('watch', function(done) {
+    test('Watcher', function(done) {
         var called = [];
 
         jub.task('A', function() {
@@ -304,7 +304,7 @@ suite('Shell tools:', function() {
             called.push('B');
         });
 
-        var watcher = jub.watch('lib/*.txt', ['A', 'B'], function() {
+        var watcher = jub.Watcher('lib/*.txt', ['A', 'B'], function() {
             watcher.close();
             deepEqual(called, ['A', 'B']);
             var modified = watcher.getModifiedFiles();
