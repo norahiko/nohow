@@ -46,27 +46,135 @@ suite('Task:', function() {
         assert(hasDone);
     });
 
-
     test('async task', function(end) {
-        function asyncCallback(done) {
-            done();
-        }
-        var taskA = new Task('A', ['B', 'C'], noop);
-        jub.asyncTask('B', asyncCallback);
-        jub.asyncTask('C', asyncCallback);
+        var taskA = new Task('A', [], asyncCallback);
+        taskA.async = true;
 
-        var called = false;
+        taskA.start(function(err) {
+            assert(started);
+            assert.isNull(err);
+            end();
+        });
+        var started = true;
+    });
+
+
+    test('sync task depends async task', function(end) {
+        var taskA = new Task('A', ['B'], noop);
+        jub.asyncTask('B', asyncCallback);
+
         function done(err) {
-            equal(err, null);
-            called = true;
+            assert(started);
+            assert.isNull(err);
+            end();
         }
         taskA.start(done);
-        equal(called, false);
+        var started = true;
+    });
 
-        setTimeout(function() {
-            equal(called, true);
+
+    test('async depends tasks run sequentially', function(end) {
+        var called = [];
+        var taskA = jub.task('A', ['B', 'C'], noop);
+
+        jub.asyncTask('B', function(done) {
+            setImmediate(function() {
+                called.push('B');
+                done();
+            });
+        });
+
+        jub.asyncTask('C', function(done) {
+            called.push('C');
+            done();
+        });
+
+        taskA.start(function(err) {
+            assert.isNull(err);
+            deepEqual(called, ['B', 'C']);
             end();
-        }, 30);
+        });
+    });
+
+
+    test('run', function() {
+        var called = false;
+        jub.task('A', function () {
+            called = true;
+        });
+
+        jub.run('A');
+        assert(called);
+    });
+
+
+    test('run with callback', function() {
+        var called = false;
+        jub.task('A', function () {
+            called = true;
+        });
+
+        jub.run('A', function() {
+            assert(called);
+        });
+    });
+
+
+    test('async run', function(end) {
+        var called = false;
+        jub.asyncTask('A', function (done) {
+            called = true;
+            done();
+        });
+
+        jub.run('A', function(err) {
+            equal(err, null);
+            assert(called);
+            end();
+        });
+    });
+
+
+    test('run error', function() {
+        jub.task('A', function () {
+            throw new Error('A');
+        });
+
+        assert.throws(function() {
+            jub.run('A');
+        });
+    });
+
+
+    test('run error with callback', function() {
+        jub.task('A', function () {
+            throw new Error('A');
+        });
+
+        var error;
+        assert.doesNotThrow(function() {
+            jub.run('A', function(err) {
+                error = err;
+            });
+        });
+
+        assert.instanceOf(error, Error);
+    });
+
+
+    test('run error with callback', function() {
+        jub.task('A', function () {
+            throw new Error('A');
+        });
+
+        var error;
+        assert.doesNotThrow(function() {
+            jub.run('A', function(err) {
+                error = err;
+            });
+        });
+
+        assert.instanceOf(error, Error);
     });
 
 
@@ -173,23 +281,20 @@ suite('Task:', function() {
         });
         jub.catchError('B', noop);
 
-        var called = false;
+        var started = false;
         Task.get('A').start(function(err) {
-            called = true;
-        });
-        equal(called, false);
-
-        setTimeout(function() {
-            equal(called, true);
+            assert(started);
+            equal(err, null);
             end();
-        }, 50);
+        });
+        started = true;
     });
 
 
     test('async test timeout', function(end) {
         jub.asyncTask('A', function(done) {
             // timeout: 1
-            setTimeout(done, 100);
+            setTimeout(done, 50);
         });
 
         Task.get('A').start(function(err) {
