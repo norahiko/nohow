@@ -10,7 +10,7 @@ suite('Lazylib:', function() {
     test('lazylib', function() {
         assert.isDefined(helper.lazylib.glob, 'lazylib.glob');
         assert.isDefined(helper.lazylib.Watcher, 'lazylib.Watcher');
-        assert.isDefined(helper.lazylib.staticserver, 'lazylib.staticserver');
+        assert.isDefined(helper.lazylib.StaticServer, 'lazylib.StaticServer');
         assert.isDefined(helper.lazylib.spawn, 'lazylib.spawn');
     });
 });
