@@ -4,7 +4,6 @@
 #include <vector>
 #include <node.h>
 
-
 #define TypeError(msg) ThrowException(Exception::TypeError(String::New(msg)));
 #define Symbol(c_str) String::NewSymbol(c_str)
 
@@ -13,7 +12,6 @@ typedef v8::Handle<v8::Value> JsValue;
 typedef v8::Local<v8::String> JsString;
 typedef v8::Local<v8::Array>  JsArray;
 typedef v8::Local<v8::Object> JsObject;
-
 
 
 class SpawnRunner {
@@ -44,8 +42,5 @@ class SpawnRunner {
         int SetEnvironment();
         int PipeStdio();
         int ChangeDirectory();
-
 };
-
-
 #endif

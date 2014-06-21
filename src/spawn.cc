@@ -10,7 +10,7 @@ using std::vector;
 using namespace v8;
 
 
-SpawnRunner::SpawnRunner(JsString executable, JsArray args, JsObject options) 
+SpawnRunner::SpawnRunner(JsString executable, JsArray args, JsObject options)
         : executable_(executable),
           args_(args),
           options_(options),
@@ -158,4 +158,3 @@ int SpawnRunner::ChangeDirectory() {
     }
     return 0;
 }
-
