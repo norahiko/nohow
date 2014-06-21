@@ -25,15 +25,8 @@ Handle<Value> spawn_sync(Args arguments) {
 }
 
 
-JsValue test(Args arguments) {
-    HandleScope scope;
-    return Null();
-}
-
-
 void init(Handle<Object> exports) {
     NODE_SET_METHOD(exports, "spawnSync", spawn_sync);
-    NODE_SET_METHOD(exports, "test", test);
 }
 
 
