@@ -1,17 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <iostream>
-
 #include "spawn.hh"
 
+using std::vector;
 using namespace v8;
-using namespace std;
 
 
 SpawnRunner::SpawnRunner(JsString executable, JsArray args, JsObject options) 

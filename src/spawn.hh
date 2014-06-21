@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <node.h>
-#include <node_buffer.h>
 
 
 #define TypeError(msg) ThrowException(Exception::TypeError(String::New(msg)));

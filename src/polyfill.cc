@@ -1,20 +1,7 @@
 #include <node.h>
-#include <string.h>
-#include <iostream>
-#include <sstream>
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-
 #include "spawn.hh"
 
 using namespace v8;
-using namespace std;
 
 
 Handle<Value> spawn_sync(Args arguments) {
