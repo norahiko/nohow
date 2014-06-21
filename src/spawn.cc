@@ -44,7 +44,6 @@ int SpawnRunner::RunChild() {
     if(PipeStdio()) { return 1; }
     if(SetEnvironment()) { return 1; }
     if(ChangeDirectory()) { return 1; }
-
     String::Utf8Value file(executable_);
     vector<char*> args = BuildArgs();
     execvp(*file, &args[0]);
@@ -110,19 +109,26 @@ vector<char*> SpawnRunner::BuildArgs() {
 
 
 int SpawnRunner::PipeStdio() {
+    int infd, outfd, errfd, err;
     if(use_stdio_pipe_) {
-        int infd = options_->Get(Symbol("stdinFd"))->Int32Value();
-        int outfd = options_->Get(Symbol("stdoutFd"))->Int32Value();
-        int errfd = options_->Get(Symbol("stderrFd"))->Int32Value();
-        int err;
-
-        err = dup2(infd, fileno(stdin));
-        if(err == -1) { perror("stdin pipe"); return 1; }
-        err = dup2(outfd, fileno(stdout));
-        if(err == -1) { perror("stdout pipe"); return 1; }
-        err = dup2(errfd, fileno(stderr));
-        if(err == -1) { perror("stderr pipe"); return 1; }
+        infd = options_->Get(Symbol("stdinFd"))->Int32Value();
+        outfd = options_->Get(Symbol("stdoutFd"))->Int32Value();
+        errfd = options_->Get(Symbol("stderrFd"))->Int32Value();
+    } else {
+        infd = open("/dev/stdin", O_RDONLY);
+        if(infd == -1) { perror("open /dev/stdin"); return 1; }
+        outfd = open("/dev/stdout", O_WRONLY);
+        if(outfd == -1) { perror("open /dev/stdout"); return 1; }
+        errfd = open("/dev/stderr", O_WRONLY);
+        if(errfd == -1) { perror("open /dev/stderr"); return 1; }
     }
+
+    err = dup2(infd, fileno(stdin));
+    if(err == -1) { perror("stdin pipe"); return 1; }
+    err = dup2(outfd, fileno(stdout));
+    if(err == -1) { perror("stdout pipe"); return 1; }
+    err = dup2(errfd, fileno(stderr));
+    if(err == -1) { perror("stderr pipe"); return 1; }
     return 0;
 }
 
