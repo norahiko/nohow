@@ -280,16 +280,19 @@ suite('Shell tools:', function() {
     });
 
 
-    test('modified', function(/* done */) {
+    test('modified', function(done) {
         equal(jub.modified('*/*.txt'), true);
         equal(jub.modified('*/*.txt'), false);
 
-        // this test is too slow
-        //setTimeout(function() {
-            //jub.writeFile('$main', 'changed');
-            //equal(jub.modified('$main'), true);
-            //done();
-        //}, 1000);
+        if(process.argv.indexOf('--watch') === -1) {
+            setTimeout(function() {
+                jub.writeFile('$main', 'changed');
+                equal(jub.modified('$main'), true);
+                done();
+            }, 1000);
+        } else {
+            done();
+        }
     });
 
 
