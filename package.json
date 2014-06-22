@@ -4,7 +4,7 @@
   "description": "The task runner with synchronous api",
   "main": "lib/__jub.js",
   "scripts": {
-    "build": "node-gyp rebuild",
+    "build": "node src/run_nodegyp.js",
     "test": "mocha -u tdd "
   },
   "bin": {
