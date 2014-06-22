@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
-var jub = require('../lib/__jub.js');
+var jub = require("../lib/__jub.js");
 jub._main();
