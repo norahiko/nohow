@@ -99,11 +99,14 @@ suite('Task:', function() {
 
     test('run', function() {
         var called = false;
-        jub.task('A', function () {
+        var taskA = jub.task('A', function () {
+            equal(this.first, false);
             called = true;
         });
 
+        equal(taskA.first, true);
         jub.run('A');
+        equal(taskA.first, false);
         assert(called);
     });
 
@@ -137,7 +140,7 @@ suite('Task:', function() {
 
     test('run error', function() {
         jub.task('A', function () {
-            throw new Error('A');
+            throw new Error('Error A');
         });
 
         assert.throws(function() {
@@ -148,7 +151,7 @@ suite('Task:', function() {
 
     test('run error with callback', function() {
         jub.task('A', function () {
-            throw new Error('A');
+            throw new Error('Error A');
         });
 
         var error;
@@ -164,7 +167,7 @@ suite('Task:', function() {
 
     test('run error with callback', function() {
         jub.task('A', function () {
-            throw new Error('A');
+            throw new Error('Error A');
         });
 
         var error;
@@ -178,7 +181,19 @@ suite('Task:', function() {
     });
 
 
-    test('runOnce tool', function() {
+    test('run many', function() {
+        var count = 0;
+        jub.task('A', function() {
+            count++;
+        });
+        jub.run('A');
+        jub.run('A');
+        jub.run('A');
+        equal(count, 3);
+    });
+
+
+    test('runOnce', function() {
         var count = 0;
         jub.task('A', function() {
             count++;
@@ -190,29 +205,37 @@ suite('Task:', function() {
     });
 
 
-    test('sync error task', function() {
+    test('sync error task 1', function() {
+        var taskA = new Task('A', [], function() {
+            throw new Error('Error A');
+        });
+
+        taskA.start(function(err) {
+            equal(err.message, 'Error A');
+        });
+    });
+
+
+    test('sync error task 2', function() {
         var taskA = new Task('A', ['B'], function() {
-            throw new Error('A');
-        });
-        jub.task('B', noop);
-        jub.task('C', function() {
-            throw new Error('C');
+            throw new Error('Error A');
         });
 
-        var errorMsg = '';
+        jub.task('B', function() {
+            throw new Error('Error B');
+        });
+
         taskA.start(function(err) {
-            errorMsg = err.message;
+            equal(err.message, 'Error B');
         });
 
-        equal(errorMsg, 'A');
-
-        taskA = new Task('A', ['B', 'C'], function() {
-            throw new Error('A');
-        });
         taskA.start(function(err) {
-            errorMsg = err.message;
+            equal(err.message, 'Error A');
         });
-        equal(errorMsg, 'C');
+
+        taskA.start(function(err) {
+            assert.isNull(err);
+        });
     });
 
 

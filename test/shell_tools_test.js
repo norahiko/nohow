@@ -294,26 +294,14 @@ suite('Shell tools:', function() {
 
 
     test('Watcher', function(done) {
-        var called = [];
-
-        jub.task('A', function() {
-            called.push('A');
-        });
-
-        jub.task('B', function() {
-            called.push('B');
-        });
-
-        var watcher = jub.Watcher('lib/*.txt', ['A', 'B'], function() {
+        var watcher = jub.Watcher('lib/*.txt', function() {
             watcher.close();
-            deepEqual(called, ['A', 'B']);
             var modified = watcher.getModifiedFiles();
 
             equal(modified.length, 2);
             equal(modified[0].charAt(0), '/');
             equal(modified[0].slice(-12), 'lib/main.txt');
             equal(modified[1].slice(-12), 'lib/util.txt');
-
             equal(watcher.getModifiedFiles().length, 0);
             done();
         });
