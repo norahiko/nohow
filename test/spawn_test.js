@@ -9,10 +9,11 @@ var env = jub.env;
 
 suite('ExecSync:', function() {
     // skip tests if exec tool is not available
+    var test = global.test;
     try {
         assert(jub.exec('node -e \'console.log("ok")\'').toString() === 'ok\n');
     } catch(err) {
-        return;
+        test = test.skip;
     }
 
     env.command = 'echo';
