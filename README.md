@@ -7,21 +7,22 @@ The task runner with synchronous api
 ## Roadmap
 
 0.0.1
-  * Add commands exec, spawn, sh, execAsync, spawnAsync
-  * Implement backport of execSync, spawnSync
+  * Add tools: exec, spawn, shell, system
+  * Implement polyfill of execSync, spawnSync
 
 0.0.2
-  * Add Commands request, wget
+  * Add tools: request, wget
+  * Add examples
 
 0.0.3
-  * Add Commands zip, unzip
+  * Add tools: zip, unzip
 
 0.0.4
+  * Add tools: tiny-reloader
   * Beautify webserver
 
 0.1.0
   * Create some plugins (e.g. reloader, coffee-script, ...)
-  * Add examples
 
 
 ## License
