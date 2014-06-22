@@ -60,7 +60,7 @@ int SpawnRunner::RunParent(pid_t pid) {
         time_t start = time(0);
 
         while(waitpid(pid, &stat, WNOHANG) == 0) {
-            usleep(1000 * 200);
+            usleep(1000 * 500);
             if(timeout < time(0) - start) {
                 kill(pid, SIGTERM);
             }
