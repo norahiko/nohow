@@ -33,7 +33,7 @@ int SpawnRunner::Run() {
     pid_t pid = fork();
     if(pid == 0) {
         RunChild();
-        exit(127);
+        _exit(127);
     } else {
         return RunParent(pid);
     }
