@@ -10,7 +10,7 @@
     "node": true,
     "expr": true,
     "eqeqeq": true,
-    "newcap": true,
+    "newcap": false,
     "quotmark": true,
     "undef": true,
     "unused": "vars",
