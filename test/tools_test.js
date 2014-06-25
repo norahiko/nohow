@@ -119,19 +119,18 @@ suite("Misc tool:", function() {
 
     test("trace", function() {
         var output = [];
-        var error = console.error;
+        var log = console.log;
         try {
-            console.error = function() {
+            console.log = function() {
                 output = arguments;
             };
             jub.trace("ok");
         } finally {
-            console.error = error;
+            console.log = log;
         }
 
-        equal(output.length, 2);
+        equal(output.length, 1);
         assert(/tools_test\.js/.test(output[0]));
-        assert(output[1], "ok");
     });
 
 
