@@ -5,7 +5,8 @@ The task runner with synchronous API
 
 ```sh
 $ jub hello name=Jub
-Hello, Jub!
+[Task hello] start
+[Log] Hello, Jub!
 ```
 
 ```javascript
