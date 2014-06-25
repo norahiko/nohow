@@ -296,8 +296,8 @@ suite("Shell tools:", function() {
     });
 
 
-    test("Watcher", function(done) {
-        var watcher = jub.Watcher("lib/*.txt", function() {
+    test("watch", function(done) {
+        var watcher = jub.watch("lib/*.txt", function() {
             watcher.close();
             var modified = watcher.getModifiedFiles();
 
@@ -316,9 +316,9 @@ suite("Shell tools:", function() {
     });
 
 
-    test("Watcher error", function() {
+    test("watch error", function() {
         assert.throws(function () {
-            jub.Watcher("not_exists_file", function() {});
+            jub.watch("not_exists_file", function() {});
         }, "jub.Watcher");
     });
 });
