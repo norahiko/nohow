@@ -314,4 +314,11 @@ suite("Shell tools:", function() {
         jub.append("lib/main.txt", "append text");
         jub.append("lib/util.txt", "append text");
     });
+
+
+    test("Watcher error", function() {
+        assert.throws(function () {
+            jub.Watcher("not_exists_file", function() {});
+        }, "jub.Watcher");
+    });
 });
