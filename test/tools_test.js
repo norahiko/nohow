@@ -80,6 +80,12 @@ suite("Expand tool:", function () {
     });
 
 
+    test("expand array", function() {
+        var ary = ["foo", "bar", "baz"];
+        equal(jub.expand("$0", ary), "foo bar baz");
+    });
+
+
     test("expand error", function() {
         assert.throws(function() {
             jub.expand("$undefined");
