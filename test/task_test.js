@@ -314,6 +314,13 @@ suite("Task:", function() {
     });
 
 
+    test("async task invalid argument", function() {
+        assert.throws(function () {
+            jub.asyncTask("A", noop);
+        }, "Async task");
+    });
+
+
     test("async test timeout", function(end) {
         jub.asyncTask("A", function(done) {
             // timeout: 1
