@@ -15,22 +15,6 @@ suite("Lazylib:", function() {
 });
 
 
-suite("Jub system helper:", function() {
-    test("parseArgs", function() {
-        var opts = helper.parseArgs([
-            "-f", "jubfile.js", "-x", "foo,bar", "-x", "jub-baz",
-            "taskA", "taskB", "--help", "-T"
-        ]);
-
-        deepEqual(opts.jubfilePath, "jubfile.js");
-        deepEqual(opts.excludePlugins, ["jub-foo", "jub-bar", "jub-baz"]);
-        deepEqual(opts.tasks, ["taskA", "taskB"]);
-        deepEqual(opts.helpFlag, true);
-        deepEqual(opts.taskListFlag, true);
-    });
-});
-
-
 suite("Array helper:", function() {
     test("unique", function() {
         deepEqual(
