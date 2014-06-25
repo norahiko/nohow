@@ -1,7 +1,38 @@
 Jub
 ====
 
-The task runner with synchronous api
+The task runner with synchronous API
+
+```sh
+$ jub hello name=Jub
+Hello, Jub!
+```
+
+```javascript
+// jubfile.js
+task("hello", function() {
+    // desc: Greeting
+    log("Hello, $name!");
+});
+
+task("build", function() {
+    // desc: build scripts
+    mkdir("build");
+    concat("lib/*.js").save("build/app.js");
+});
+
+task("watch", function() {
+    watch(["lib/*.js"], function() {
+        run("build");
+    });
+});
+
+task("sleep", function() {
+    exec("sleep 5");
+    // 5 seconds later
+    log("Good morning!!!");
+});
+```
 
 
 ## Roadmap
