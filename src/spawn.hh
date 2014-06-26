@@ -29,12 +29,12 @@ class SpawnRunner {
 
         char* exec_file_;
         JsObject env_;
-        bool use_stdio_pipe_;
         int64_t timeout_; // milliseconds
         int share_mem_id_;
 
         int status_;
         pid_t child_pid_;
+        bool has_timedout_;
 
         std::vector<char*> BuildArgs();
         int RunChild();

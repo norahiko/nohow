@@ -4,7 +4,7 @@
 using namespace v8;
 
 
-Handle<Value> spawn_sync(Args arguments) {
+JsValue spawn_sync(Args arguments) {
     HandleScope scope;
 
     if(arguments.Length() != 3 ||

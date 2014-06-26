@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <time.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -17,11 +18,8 @@ SpawnRunner::SpawnRunner(JsString executable, JsArray args, JsObject options)
 
           timeout_(0),
           status_(0),
-          child_pid_(-1) {
-
-    JsString stdio_opt = options->Get(Symbol("stdio")).As<String>();
-    use_stdio_pipe_ = stdio_opt->Equals(Symbol("pipe"));
-
+          child_pid_(-1),
+          has_timedout_(false) {
     JsValue timeout_opt = options->Get(Symbol("timeout"));
     if(timeout_opt->IsNumber()) {
         timeout_ = static_cast<int64_t>(timeout_opt->IntegerValue());
@@ -47,6 +45,7 @@ int SpawnRunner::RunChild() {
     String::Utf8Value file(executable_);
     vector<char*> args = BuildArgs();
     execvp(*file, &args[0]);
+    fprintf(stderr, "errno: %d\n", errno);
     perror(*file);
     return 1;
 }
@@ -63,6 +62,7 @@ int SpawnRunner::RunParent(pid_t pid) {
             usleep(1000 * 500);
             if(timeout < time(0) - start) {
                 kill(pid, SIGTERM);
+                has_timedout_ = true;
             }
         }
     } else {
@@ -77,6 +77,7 @@ JsObject SpawnRunner::BuildResultObject(int stat) {
 
     if(WIFEXITED(stat)) {
         status_ = WEXITSTATUS(stat);
+        result->Set(Symbol("signal"), Null());
     } else if(WIFSIGNALED(stat)) {
         int sig = WTERMSIG(stat);
         JsString signame = String::New(node::signo_string(sig));
@@ -88,6 +89,7 @@ JsObject SpawnRunner::BuildResultObject(int stat) {
     result->Set(Symbol("pid"), Number::New(child_pid_));
     result->Set(Symbol("file"), executable_);
     result->Set(Symbol("args"), args_);
+    result->Set(Symbol("_hasTimedOut"), Boolean::New(has_timedout_));
     return result;
 }
 
@@ -109,26 +111,32 @@ vector<char*> SpawnRunner::BuildArgs() {
 
 
 int SpawnRunner::PipeStdio() {
-    int infd, outfd, errfd, err;
-    if(use_stdio_pipe_) {
-        infd = options_->Get(Symbol("stdinFd"))->Int32Value();
-        outfd = options_->Get(Symbol("stdoutFd"))->Int32Value();
-        errfd = options_->Get(Symbol("stderrFd"))->Int32Value();
-    } else {
-        infd = open("/dev/stdin", O_RDONLY);
-        if(infd == -1) { perror("open /dev/stdin"); return 1; }
-        outfd = open("/dev/stdout", O_WRONLY);
-        if(outfd == -1) { perror("open /dev/stdout"); return 1; }
-        errfd = open("/dev/stderr", O_WRONLY);
-        if(errfd == -1) { perror("open /dev/stderr"); return 1; }
-    }
+    JsArray stdio = options_->Get(Symbol("stdio")).As<Array>();
 
-    err = dup2(infd, fileno(stdin));
-    if(err == -1) { perror("stdin pipe"); return 1; }
-    err = dup2(outfd, fileno(stdout));
-    if(err == -1) { perror("stdout pipe"); return 1; }
-    err = dup2(errfd, fileno(stderr));
-    if(err == -1) { perror("stderr pipe"); return 1; }
+    const char* files[3] = {"/dev/stdin", "/dev/stdout", "/dev/stderr"};
+    const char* names[3] = {"stdin pipe", "stdout pipe", "stderr pipe"};
+    int modes[3] = {O_RDONLY, O_WRONLY, O_WRONLY};
+
+    for(int i = 0; i < 3; i++) {
+        JsValue pipe = stdio->Get(Number::New(i));
+        int fd;
+
+        if(pipe->IsNumber()) {
+            fd = pipe->IntegerValue();
+        } else {
+            fd = open(files[i], modes[i]);
+            if(fd == -1) {
+                fprintf(stderr, "errno: %d\n", errno);
+                perror(files[i]);
+                return 1;
+            }
+        }
+        if(dup2(fd, i) == -1) {
+            fprintf(stderr, "errno: %d\n", errno);
+            perror(names[i]);
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -158,6 +166,7 @@ int SpawnRunner::ChangeDirectory() {
         String::Utf8Value raw_cwd(cwd);
         int err = chdir(*raw_cwd);
         if(err) {
+            fprintf(stderr, "errno: %d\n", errno);
             perror(*raw_cwd);
             return err;
         }

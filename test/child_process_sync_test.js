@@ -8,11 +8,9 @@ var deepEqual = assert.deepEqual;
 var env = jub.env;
 
 suite("ExecSync:", function() {
-    // skip tests if exec tool is not available
+    // skip tests if polyfill wasn't compiled
     var test = global.test;
-    try {
-        assert(jub.exec("node -e \"console.log('ok')\"").toString() === "ok\n");
-    } catch(err) {
+    if(jub.notExists("$root/build/Release/polyfill.node")) {
         test = test.skip;
     }
 
@@ -29,7 +27,7 @@ suite("ExecSync:", function() {
         equal(r.stderr, "");
         equal(r.status, 0);
         equal(r.error, undefined);
-        equal(r.signal, undefined);
+        equal(r.signal, null);
         assert(0 < r.pid);
     });
 
@@ -40,12 +38,13 @@ suite("ExecSync:", function() {
                 timeout: 500
             });
             equal(r.signal, "SIGTERM");
+            assert.instanceOf(r.error, Error);
         });
     }
 
 
     test("spawn failed", function() {
-        var r = jub.spawn("not_exists_file__");
+        var r = jub.spawn("not_exists_file__", []);
         equal(r.status, 127);
         assert.instanceOf(r.error, Error);
     });
@@ -80,10 +79,12 @@ suite("ExecSync:", function() {
 
 
     test("system", function() {
-        var good = jub.system("exit 0");
-        equal(good, true);
+        assert.doesNotThrow(function () {
+            jub.system("exit 0");
+        });
 
-        var bad = jub.system("exit 1");
-        equal(bad, false);
+        assert.throws(function () {
+            jub.system("exit 1");
+        });
     });
 });
