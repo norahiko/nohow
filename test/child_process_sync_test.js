@@ -70,21 +70,21 @@ suite("ExecSync:", function() {
     });
 
 
-    test("shell", function() {
-        var r = jub.shell("$command $msg && exit 1", { encoding: "utf-8" });
+    test("popen", function() {
+        var r = jub.popen("$command $msg && exit 1", { encoding: "utf-8" });
         equal(r.status, 1);
         equal(r.stdout, "hello\n");
         equal(r.stderr, "");
     });
 
 
-    test("system", function() {
+    test("shell", function() {
         assert.doesNotThrow(function () {
-            jub.system("exit 0");
+            jub.shell("exit 0");
         });
 
         assert.throws(function () {
-            jub.system("exit 1");
+            jub.shell("exit 1");
         });
     });
 });
