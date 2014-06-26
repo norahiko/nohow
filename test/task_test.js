@@ -17,7 +17,12 @@ function asyncCallback(done) {
 
 suite("Task:", function() {
     setup(function() {
+        jub.env.logLevel = 1; // LogLevel == Log
         taskModule.reset();
+    });
+
+    teardown(function () {
+        jub.env.logLevel = 0; // logLevel == Info
     });
 
 
