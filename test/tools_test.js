@@ -123,23 +123,6 @@ suite("Misc tool:", function() {
     });
 
 
-    test("trace", function() {
-        var output = [];
-        var log = console.log;
-        try {
-            console.log = function() {
-                output = arguments;
-            };
-            jub.trace("ok");
-        } finally {
-            console.log = log;
-        }
-
-        equal(output.length, 1);
-        assert(/tools_test\.js/.test(output[0]));
-    });
-
-
     test("executable", function() {
         assert(jub.executable("node"));
         assert(! jub.executable("not a binary file"));
