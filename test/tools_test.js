@@ -138,7 +138,7 @@ suite("StaticServer", function() {
         env.STATIC_HOST = "localhost";
         server = jub.StaticServer({
             documentRoot: root,
-            listenCallback: done,
+            callback: done,
         });
     });
 
