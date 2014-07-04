@@ -7,6 +7,8 @@ var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 var env = jub.env;
 var root = process.cwd();
+env.TMPDIR = env.root;
+//console.log(env.TMPDIR);
 
 
 suite("Change directory tools:", function() {

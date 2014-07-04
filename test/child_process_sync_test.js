@@ -6,6 +6,7 @@ var assert = chai.assert;
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 var env = jub.env;
+env.TMPDIR = ".";
 
 suite("ExecSync:", function() {
     // skip tests if polyfill wasn't compiled
