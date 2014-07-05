@@ -134,8 +134,8 @@ suite("StaticServer", function() {
     var server;
 
     setup(function (done) {
-        env.STATIC_PORT = 7878;
-        env.STATIC_HOST = "localhost";
+        env.staticPort = 7878;
+        env.staticHost = "localhost";
         server = jub.StaticServer({
             documentRoot: root,
             callback: done,

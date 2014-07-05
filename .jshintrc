@@ -6,7 +6,6 @@
         "setup": false,
         "teardown": false
     },
-    "browser": true,
     "node": true,
     "expr": true,
     "eqeqeq": true,
