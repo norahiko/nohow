@@ -1,8 +1,8 @@
 "use strict";
 
 Error.stackTraceLimit = 7;
+var nohow = require("../lib/nohow.js");
 var taskModule = require("../lib/task.js");
-var jub = require("../lib/jub.js");
 
 var Task = taskModule.Task;
 
@@ -17,12 +17,12 @@ function asyncCallback(done) {
 
 suite("Task:", function() {
     setup(function() {
-        jub.env.logLevel = 1; // LogLevel == Log
+        nohow.env.logLevel = 1; // LogLevel == Log
         taskModule.reset();
     });
 
     teardown(function () {
-        jub.env.logLevel = 0; // logLevel == Info
+        nohow.env.logLevel = 0; // logLevel == Info
     });
 
 
@@ -41,8 +41,8 @@ suite("Task:", function() {
 
     test("sync task", function() {
         var taskA = new Task("A", ["B", "C"], noop);
-        jub.task("B", noop);
-        jub.task("C", noop);
+        nohow.task("B", noop);
+        nohow.task("C", noop);
 
         var hasDone = false;
         taskA.start(function() {
@@ -66,7 +66,7 @@ suite("Task:", function() {
 
     test("sync task depends async task", function(end) {
         var taskA = new Task("A", ["B"], noop);
-        jub.asyncTask("B", asyncCallback);
+        nohow.asyncTask("B", asyncCallback);
 
         function done(err) {
             assert(started);
@@ -80,16 +80,16 @@ suite("Task:", function() {
 
     test("async depends tasks run sequentially", function(end) {
         var called = [];
-        var taskA = jub.task("A", ["B", "C"], noop);
+        var taskA = nohow.task("A", ["B", "C"], noop);
 
-        jub.asyncTask("B", function(done) {
+        nohow.asyncTask("B", function(done) {
             setImmediate(function() {
                 called.push("B");
                 done();
             });
         });
 
-        jub.asyncTask("C", function(done) {
+        nohow.asyncTask("C", function(done) {
             called.push("C");
             done();
         });
@@ -104,13 +104,13 @@ suite("Task:", function() {
 
     test("run", function() {
         var called = false;
-        var taskA = jub.task("A", function () {
+        var taskA = nohow.task("A", function () {
             equal(this.first, false);
             called = true;
         });
 
         equal(taskA.first, true);
-        jub.run("A");
+        nohow.run("A");
         equal(taskA.first, false);
         assert(called);
     });
@@ -118,11 +118,11 @@ suite("Task:", function() {
 
     test("run with callback", function() {
         var called = false;
-        jub.task("A", function () {
+        nohow.task("A", function () {
             called = true;
         });
 
-        jub.run("A", function() {
+        nohow.run("A", function() {
             assert(called);
         });
     });
@@ -130,12 +130,12 @@ suite("Task:", function() {
 
     test("async run", function(end) {
         var called = false;
-        jub.asyncTask("A", function (done) {
+        nohow.asyncTask("A", function (done) {
             called = true;
             done();
         });
 
-        jub.run("A", function(err) {
+        nohow.run("A", function(err) {
             equal(err, null);
             assert(called);
             end();
@@ -144,24 +144,24 @@ suite("Task:", function() {
 
 
     test("run error", function() {
-        jub.task("A", function () {
+        nohow.task("A", function () {
             throw new Error("Error A");
         });
 
         assert.throws(function() {
-            jub.run("A");
+            nohow.run("A");
         });
     });
 
 
     test("run error with callback", function() {
-        jub.task("A", function () {
+        nohow.task("A", function () {
             throw new Error("Error A");
         });
 
         var error;
         assert.doesNotThrow(function() {
-            jub.run("A", function(err) {
+            nohow.run("A", function(err) {
                 error = err;
             });
         });
@@ -171,13 +171,13 @@ suite("Task:", function() {
 
 
     test("run error with callback", function() {
-        jub.task("A", function () {
+        nohow.task("A", function () {
             throw new Error("Error A");
         });
 
         var error;
         assert.doesNotThrow(function() {
-            jub.run("A", function(err) {
+            nohow.run("A", function(err) {
                 error = err;
             });
         });
@@ -188,24 +188,24 @@ suite("Task:", function() {
 
     test("run many", function() {
         var count = 0;
-        jub.task("A", function() {
+        nohow.task("A", function() {
             count++;
         });
-        jub.run("A");
-        jub.run("A");
-        jub.run("A");
+        nohow.run("A");
+        nohow.run("A");
+        nohow.run("A");
         equal(count, 3);
     });
 
 
     test("runOnce", function() {
         var count = 0;
-        jub.task("A", function() {
+        nohow.task("A", function() {
             count++;
         });
-        jub.runOnce("A");
-        jub.runOnce("A");
-        jub.runOnce("A");
+        nohow.runOnce("A");
+        nohow.runOnce("A");
+        nohow.runOnce("A");
         equal(count, 1);
     });
 
@@ -226,7 +226,7 @@ suite("Task:", function() {
             throw new Error("Error A");
         });
 
-        jub.task("B", function() {
+        nohow.task("B", function() {
             throw new Error("Error B");
         });
 
@@ -249,17 +249,17 @@ suite("Task:", function() {
         var calledB = false;
         var calledC = false;
 
-        var taskA = jub.asyncTask("A", ["B", "C"], function(done) {
+        var taskA = nohow.asyncTask("A", ["B", "C"], function(done) {
             calledA = true;
             done("Error A");
         });
 
-        jub.asyncTask("B", function(done) {
+        nohow.asyncTask("B", function(done) {
             calledB = true;
             done("Error B");
         });
 
-        jub.asyncTask("C", function(done) {
+        nohow.asyncTask("C", function(done) {
             calledC = true;
             done("Error C");
         });
@@ -280,16 +280,16 @@ suite("Task:", function() {
         var messages = [];
         var task = new Task("A", ["B"], noop);
 
-        jub.task("B", function() {
+        nohow.task("B", function() {
             throw new Error("foo");
         });
 
-        jub.catchError("B", function(err) {
+        nohow.catchError("B", function(err) {
             messages.push(err.message);
             throw new Error("bar");
         });
 
-        jub.catchError("B", function(err) {
+        nohow.catchError("B", function(err) {
             messages.push(err.message);
             throw new Error("baz");
         });
@@ -303,11 +303,11 @@ suite("Task:", function() {
 
 
     test("catch error async", function(end) {
-        jub.asyncTask("A", ["B"], asyncCallback);
-        jub.asyncTask("B", function(done) {
+        nohow.asyncTask("A", ["B"], asyncCallback);
+        nohow.asyncTask("B", function(done) {
             done(new Error("foo"));
         });
-        jub.catchError("B", noop);
+        nohow.catchError("B", noop);
 
         var started = false;
         Task.get("A").start(function(err) {
@@ -321,13 +321,13 @@ suite("Task:", function() {
 
     test("async task invalid argument", function() {
         assert.throws(function () {
-            jub.asyncTask("A", noop);
+            nohow.asyncTask("A", noop);
         }, "Async task");
     });
 
 
     test("async test timeout", function(end) {
-        jub.asyncTask("A", function(done) {
+        nohow.asyncTask("A", function(done) {
             // timeout: 1
             setTimeout(done, 50);
         });
@@ -340,7 +340,7 @@ suite("Task:", function() {
 
 
     test("async test not timeout", function(end) {
-        jub.asyncTask("A", function(done) {
+        nohow.asyncTask("A", function(done) {
             // timeout: 100
             setImmediate(done);
         });

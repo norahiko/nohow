@@ -1,11 +1,11 @@
-var jub = require("../lib/jub.js");
+var nohow = require("../lib/nohow.js");
 
 var assert = require("chai").assert;
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 
 suite("logging", function() {
-    var env = jub.env;
+    var env = nohow.env;
 
     test("trace", function() {
         var output = [];
@@ -14,7 +14,7 @@ suite("logging", function() {
             console.error = function() {
                 output = arguments;
             };
-            jub.trace("ok");
+            nohow.trace("ok");
         } finally {
             console.error = err;
         }
@@ -33,13 +33,13 @@ suite("logging", function() {
             };
 
             env.logLevel = 1;
-            jub.log(1);
+            nohow.log(1);
 
             env.logLevel = 2;
-            jub.log(2);
+            nohow.log(2);
 
             env.logLevel = 1;
-            jub.log(1);
+            nohow.log(1);
 
             deepEqual(called, [1, 1]);
         } finally {

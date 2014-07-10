@@ -12,35 +12,32 @@ var deepEqual = assert.deepEqual;
 suite("CommandLine:", function() {
     test("parseArgs", function() {
         var cl = new CommandLine([
-            "-f", "jubfile.js", "-x", "foo,bar", "-x", "jub-baz",
+            "-f", "nohow.js", "-x", "foo,bar", "-x", "nohow-baz",
             "taskA", "taskB", "--help", "-t", "EnvName=EnvValue",
         ]);
         cl.parseArgs();
 
-        deepEqual(cl.jubfile, "jubfile.js");
+        deepEqual(cl.nohowFileName, "nohow.js");
         deepEqual(cl.tasks, ["taskA", "taskB"]);
         deepEqual(cl.helpFlag, true);
         deepEqual(cl.taskListFlag, true);
         deepEqual(
             cl.excludePlugins,
             {
-                "jub-foo": true,
-                "jub-bar": true,
-                "jub-baz": true,
+                "nohow-foo": true,
+                "nohow-bar": true,
+                "nohow-baz": true,
             }
         );
         equal(process.env.EnvName, "EnvValue");
     });
 
 
-    test("generate jubfile header", function() {
+    test("generate nohow file header", function() {
         var cl = new CommandLine([]);
-        var script = cl.generateJubfileHeader();
+        var script = cl.generateNohowFileHeader();
 
         assert(500 < script.length);
         assert(script.indexOf("\n") === -1);
-        assert.doesNotThrow(function () {
-            eval(script);
-        });
     });
 });

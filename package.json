@@ -1,25 +1,25 @@
 {
-  "name": "jub",
+  "name": "nohow",
   "version": "0.0.0",
   "description": "The task runner with synchronous api",
-  "main": "lib/__jub.js",
+  "main": "lib/__nohow.js",
   "scripts": {
     "build": "node src/run_nodegyp.js",
     "test": "mocha -u tdd "
   },
   "bin": {
-      "jub": "./bin/jub_bin.js"
+      "nohow": "./bin/nohow_bin.js"
   },
   "author": "norahiko",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/norahiko/jub.git"
+    "url": "git://github.com/norahiko/nohow.git"
   },
   "bugs": {
-    "url": "https://github.com/norahiko/jub/issues"
+    "url": "https://github.com/norahiko/nohow/issues"
   },
-  "homepage": "https://github.com/norahiko/jub",
+  "homepage": "https://github.com/norahiko/nohow",
   "dependencies": {
     "glob": "^3.2.9"
   },

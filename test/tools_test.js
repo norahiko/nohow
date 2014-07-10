@@ -1,12 +1,12 @@
 "use strict";
 
 Error.stackTraceLimit = 7;
-var jub = require("../lib/jub.js");
+var nohow = require("../lib/nohow.js");
 var http = require("http");
 
 var assert = require("chai").assert;
 var equal = assert.strictEqual;
-var env = jub.env;
+var env = nohow.env;
 var root = process.cwd();
 
 
@@ -29,82 +29,82 @@ suite("Expand tool:", function () {
 
 
     test("expand env", function () {
-        equal(jub.expand("$key"), "value");
-        equal(jub.expand("${key}"), "value");
-        equal(jub.expand("/a/$key/b"), "/a/value/b");
-        equal(jub.expand("$cwd"), "/test");
-        equal(jub.expand("$file"), "dir/file.js");
-        equal(jub.expand("~"), process.env.HOME);
+        equal(nohow.expand("$key"), "value");
+        equal(nohow.expand("${key}"), "value");
+        equal(nohow.expand("/a/$key/b"), "/a/value/b");
+        equal(nohow.expand("$cwd"), "/test");
+        equal(nohow.expand("$file"), "dir/file.js");
+        equal(nohow.expand("~"), process.env.HOME);
     });
 
 
     test("expand attributes", function() {
-        equal(jub.expand("$file.length"), "11");
-        equal(jub.expand("${file.length}"), "11");
-        equal(jub.expand("$object.key.2.0"), "piyo");
-        equal(jub.expand("${object.path:abs}"), "/test/path.obj");
+        equal(nohow.expand("$file.length"), "11");
+        equal(nohow.expand("${file.length}"), "11");
+        equal(nohow.expand("$object.key.2.0"), "piyo");
+        equal(nohow.expand("${object.path:abs}"), "/test/path.obj");
     });
 
 
     test("expand filter", function() {
         if(process.platform !== "win32") {
-            equal(jub.expand("$file:abs"), "/test/dir/file.js");
-            equal(jub.expand("${file:abs}"), "/test/dir/file.js");
+            equal(nohow.expand("$file:abs"), "/test/dir/file.js");
+            equal(nohow.expand("${file:abs}"), "/test/dir/file.js");
         }
-        equal(jub.expand("$file:dir"), "dir");
-        equal(jub.expand("$file:base"), "file.js");
-        equal(jub.expand("$file:rmext"), "dir/file");
-        equal(jub.expand("$0:digit2", 0), "00");
-        equal(jub.expand("$0:digit2", 1), "01");
-        equal(jub.expand("$0:digit2", -1), "-01");
-        equal(jub.expand("$0:digit2", 1.234), "01");
-        equal(jub.expand("$0:digit2", 1.9), "01");
-        equal(jub.expand("$0:digit2", -1.9), "-01");
-        equal(jub.expand("$0:digit2", 10), "10");
-        equal(jub.expand("$0:digit2", -10), "-10");
-        equal(jub.expand("$0:digit2", 100), "100");
-        equal(jub.expand("$0:digit2", -100), "-100");
-        equal(jub.expand("$0:digit6", 123), "000123");
+        equal(nohow.expand("$file:dir"), "dir");
+        equal(nohow.expand("$file:base"), "file.js");
+        equal(nohow.expand("$file:rmext"), "dir/file");
+        equal(nohow.expand("$0:digit2", 0), "00");
+        equal(nohow.expand("$0:digit2", 1), "01");
+        equal(nohow.expand("$0:digit2", -1), "-01");
+        equal(nohow.expand("$0:digit2", 1.234), "01");
+        equal(nohow.expand("$0:digit2", 1.9), "01");
+        equal(nohow.expand("$0:digit2", -1.9), "-01");
+        equal(nohow.expand("$0:digit2", 10), "10");
+        equal(nohow.expand("$0:digit2", -10), "-10");
+        equal(nohow.expand("$0:digit2", 100), "100");
+        equal(nohow.expand("$0:digit2", -100), "-100");
+        equal(nohow.expand("$0:digit6", 123), "000123");
     });
 
 
     test("expand arguments", function() {
-        equal(jub.expand("Hello, $0", "jubJS"), "Hello, jubJS");
-        equal(jub.expand("$0$1 is not $0", "Java", "Script"), "JavaScript is not Java");
+        equal(nohow.expand("Hello, $0", "Nohow"), "Hello, Nohow");
+        equal(nohow.expand("$0$1 is not $0", "Java", "Script"), "JavaScript is not Java");
     });
 
 
     test("not expanded", function () {
-        equal(jub.expand("${key"), "${key");
+        equal(nohow.expand("${key"), "${key");
 
     });
 
 
     test("expand array", function() {
         var ary = ["foo", "bar", "baz"];
-        equal(jub.expand("$0", ary), "foo bar baz");
+        equal(nohow.expand("$0", ary), "foo bar baz");
     });
 
 
     test("expand error", function() {
         assert.throws(function() {
-            jub.expand("$undefined");
+            nohow.expand("$undefined");
         });
 
         assert.throws(function() {
-            jub.expand("$0");
+            nohow.expand("$0");
         });
 
         assert.throws(function() {
-            jub.expand("$1", "foo");
+            nohow.expand("$1", "foo");
         });
 
         assert.throws(function() {
-            jub.expand("$object.undefined");
+            nohow.expand("$object.undefined");
         });
 
         assert.throws(function() {
-            jub.expand("$0:undefined_filter", "value");
+            nohow.expand("$0:undefined_filter", "value");
         });
     });
 });
@@ -117,15 +117,15 @@ suite("Misc tool:", function() {
 
 
     test("defined", function() {
-        for(var name in jub.tools) {
-            assert.isDefined(jub.tools[name], "tools." + name + " is undefined");
+        for(var name in nohow.tools) {
+            assert.isDefined(nohow.tools[name], "tools." + name + " is undefined");
         }
     });
 
 
     test("executable", function() {
-        assert(jub.executable("node"));
-        assert(! jub.executable("not a binary file"));
+        assert(nohow.executable("node"));
+        assert(! nohow.executable("not a binary file"));
     });
 });
 
@@ -136,7 +136,7 @@ suite("StaticServer", function() {
     setup(function (done) {
         env.staticPort = 7878;
         env.staticHost = "localhost";
-        server = jub.StaticServer({
+        server = nohow.StaticServer({
             documentRoot: root,
             callback: done,
         });

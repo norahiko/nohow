@@ -1,16 +1,16 @@
-Jub
+Nohow
 ====
 
 The task runner with synchronous API
 
 ```sh
-$ jub hello name=Jub
+$ nohow hello name=Nohow
 [Task hello] start
-[Log] Hello, Jub!
+[Log] Hello, Nohow!
 ```
 
 ```javascript
-// jubfile.js
+// nohow.js
 task("hello", function() {
     // desc: Greeting
     log("Hello, $name!");
