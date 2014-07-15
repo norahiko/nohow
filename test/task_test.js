@@ -17,12 +17,12 @@ function asyncCallback(done) {
 
 suite("Task:", function() {
     setup(function() {
-        nohow.env.logLevel = 1; // LogLevel == Log
+        nohow.env.LOG_LEVEL = 2; // LOG_LEVEL == Log
         taskModule.reset();
     });
 
     teardown(function () {
-        nohow.env.logLevel = 0; // logLevel == Info
+        nohow.env.LOG_LEVEL = 1; // LOG_LEVEL == Info
     });
 
 

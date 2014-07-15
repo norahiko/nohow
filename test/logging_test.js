@@ -27,24 +27,38 @@ suite("logging", function() {
     test("log", function() {
         var err = console.error;
         var called = [];
+        var level = env.LOG_LEVEL;
         try {
             console.error = function() {
                 called.push(arguments[1]);
             };
 
-            env.logLevel = 1;
-            nohow.log(1);
+            env.LOG_LEVEL = 0;
 
-            env.logLevel = 2;
-            nohow.log(2);
+            nohow.debug(["debug"]);
+            env.LOG_LEVEL = 1;
+            nohow.debug(["debug"]);
 
-            env.logLevel = 1;
-            nohow.log(1);
+            nohow.info(["info"]);
+            env.LOG_LEVEL = 2;
+            nohow.info(["info"]);
 
-            deepEqual(called, [1, 1]);
+            nohow.log(["log"]);
+            env.LOG_LEVEL = 3;
+            nohow.log(["log"]);
+
+            nohow.warn(["warn"]);
+            env.LOG_LEVEL = 4;
+            nohow.warn(["warn"]);
+
+            nohow.error(["error"]);
+            env.LOG_LEVEL = 5;
+            nohow.error(["error"]);
+            deepEqual(called, [["debug"], ["info"], ["log"], ["warn"], ["error"]]);
+
         } finally {
             console.error = err;
-            env.logLevel = 0;
+            env.LOG_LEVEL = level;
         }
 
     });

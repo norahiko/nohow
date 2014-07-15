@@ -7,7 +7,7 @@ var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 var env = nohow.env;
 var root = process.cwd();
-env.TMPDIR = env.root;
+env.TMPDIR = env.ROOT;
 //console.log(env.TMPDIR);
 
 

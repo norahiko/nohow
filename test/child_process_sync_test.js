@@ -8,10 +8,11 @@ var deepEqual = assert.deepEqual;
 var env = nohow.env;
 env.TMPDIR = ".";
 
-suite("ExecSync:", function() {
+suite("Child process sync:", function() {
     // skip tests if polyfill wasn't compiled
     var test = global.test;
-    if(nohow.notExists("$root/build/Release/polyfill.node")) {
+    if(nohow.notExists("$ROOT/build/Release/polyfill.node")) {
+        console.warn("[nohow] Could not load polyfill addon");
         test = test.skip;
     }
 
