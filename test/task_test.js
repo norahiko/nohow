@@ -187,14 +187,19 @@ suite("Task:", function() {
 
 
     test("run many", function() {
-        var count = 0;
-        nohow.task("A", function() {
-            count++;
+        var called = [];
+        nohow.task("B", function() {
+            called.push("B");
+        });
+
+        nohow.task("A", ["B"], function() {
+            called.push("A");
         });
         nohow.run("A");
         nohow.run("A");
         nohow.run("A");
-        equal(count, 3);
+
+        deepEqual(called, ["B", "A", "B", "A", "B", "A"]);
     });
 
 
