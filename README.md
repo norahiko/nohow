@@ -5,7 +5,7 @@ The task runner with synchronous API
 
 ```sh
 $ nohow hello
-[Info]  Task 'sleep' start
+[Info]  Task 'hello' start
 [Log]   Hello, world!
 ```
 
