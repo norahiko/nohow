@@ -29,13 +29,11 @@ suite("Task:", function() {
     test("initialize", function() {
         var task = new Task("foo", ["a", "b"], function() {
             // description: test task
-            // timeout: 123sec
             "do something";
         });
         equal(task.name, "foo");
         equal(task.mode, "internal");
         equal(task.description, "test task");
-        equal(task.timeout, 123000);
     });
 
 
@@ -328,31 +326,5 @@ suite("Task:", function() {
         assert.throws(function () {
             nohow.asyncTask("A", noop);
         }, "Async task");
-    });
-
-
-    test("async test timeout", function(end) {
-        nohow.asyncTask("A", function(done) {
-            // timeout: 1
-            setTimeout(done, 50);
-        });
-
-        Task.get("A").start(function(err) {
-            equal(err.message, "timeout");
-            end();
-        });
-    });
-
-
-    test("async test not timeout", function(end) {
-        nohow.asyncTask("A", function(done) {
-            // timeout: 100
-            setImmediate(done);
-        });
-
-        Task.get("A").start(function(err) {
-            equal(err, null);
-            end();
-        });
     });
 });
