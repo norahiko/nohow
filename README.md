@@ -5,12 +5,17 @@ The task runner with synchronous API
 
 ```sh
 $ nohow hello
-[Info] Task 'sleep' start
-[Log] Hello, world!
+[Info]  Task 'sleep' start
+[Log]   Hello, world!
 ```
 
 ```javascript
 // nohow.js
+
+env.src = expand("$ROOT/lib/*.js");
+env.outdir = "build";
+env.out = "app.js";
+
 task("hello", function() {
     // desc: Greeting
     log("Hello, world!");
@@ -18,18 +23,19 @@ task("hello", function() {
 
 task("build", function() {
     // desc: build scripts
-    mkdir("build");
-    concat("lib/*.js").save("build/app.js");
+    mkdir("$distdir");
+    concat("$src").save("$outdir/$out");
 });
 
 task("watch", function() {
-    watch(["lib/*.js"], function() {
+    watch("$src", function() {
         run("build");
     });
 });
 
 task("sleep", function() {
-    exec("sleep 5");
+    env.sec = 5;
+    exec("sleep $sec");
     // 5 seconds later
     log("Good morning!!!");
 });
