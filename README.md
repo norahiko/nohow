@@ -4,16 +4,16 @@ Nohow
 The task runner with synchronous API
 
 ```sh
-$ nohow hello name=Nohow
-[Task hello] start
-[Log] Hello, Nohow!
+$ nohow hello
+[Info] Task 'sleep' start
+[Log] Hello, world!
 ```
 
 ```javascript
 // nohow.js
 task("hello", function() {
     // desc: Greeting
-    log("Hello, $name!");
+    log("Hello, world!");
 });
 
 task("build", function() {
