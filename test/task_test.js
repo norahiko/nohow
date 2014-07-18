@@ -17,12 +17,12 @@ function asyncCallback(done) {
 
 suite("Task:", function() {
     setup(function() {
-        nohow.env.LOG_LEVEL = 2; // LOG_LEVEL == Log
+        nohow.env.LOG_LEVEL = "log";
         taskModule.reset();
     });
 
     teardown(function () {
-        nohow.env.LOG_LEVEL = 1; // LOG_LEVEL == Info
+        nohow.env.LOG_LEVEL = "info";
     });
 
 
@@ -33,7 +33,7 @@ suite("Task:", function() {
             "do something";
         });
         equal(task.name, "foo");
-        equal(task.mode, "builtin");
+        equal(task.mode, "internal");
         equal(task.description, "test task");
         equal(task.timeout, 123000);
     });

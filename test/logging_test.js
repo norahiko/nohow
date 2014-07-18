@@ -4,60 +4,62 @@ var assert = require("chai").assert;
 var equal = assert.strictEqual;
 var deepEqual = assert.deepEqual;
 
-suite("logging", function() {
+suite("logging:", function() {
     var env = nohow.env;
 
     test("trace", function() {
-        var output = [];
-        var err = console.error;
+        var called = [];
+        var write = console._stderr.write;
         try {
-            console.error = function() {
-                output = arguments;
+            console._stderr.write = function(str) {
+                called.push(str);
             };
-            nohow.trace("ok");
+            nohow.trace("trace %s", "ok");
         } finally {
-            console.error = err;
+            console._stderr.write = write;
         }
 
-        equal(output.length, 1);
-        assert(/logging_test\.js/.test(output[0]));
+        assert(/logging_test\.js/.test(called[0]));
+        equal(called[1], "trace ok\n");
     });
 
 
     test("log", function() {
-        var err = console.error;
+        var write = console._stderr.write;
         var called = [];
         var level = env.LOG_LEVEL;
         try {
-            console.error = function() {
-                called.push(arguments[1]);
+            console._stderr.write = function(str) {
+                if(str[0] !== "[") {
+                    called.push(str);
+                }
             };
 
-            env.LOG_LEVEL = 0;
+            env.LOG_LEVEL = "debug";
 
-            nohow.debug(["debug"]);
-            env.LOG_LEVEL = 1;
-            nohow.debug(["debug"]);
+            nohow.debug("debug");
+            env.LOG_LEVEL = "info";
+            nohow.debug("debug");
 
-            nohow.info(["info"]);
-            env.LOG_LEVEL = 2;
-            nohow.info(["info"]);
+            nohow.info("info");
+            env.LOG_LEVEL = "log";
+            nohow.info("info");
 
-            nohow.log(["log"]);
-            env.LOG_LEVEL = 3;
-            nohow.log(["log"]);
+            nohow.log("log");
+            env.LOG_LEVEL = "warn";
+            nohow.log("log");
 
-            nohow.warn(["warn"]);
-            env.LOG_LEVEL = 4;
-            nohow.warn(["warn"]);
+            nohow.warn("warn");
+            env.LOG_LEVEL = "error";
+            nohow.warn("warn");
 
-            nohow.error(["error"]);
-            env.LOG_LEVEL = 5;
-            nohow.error(["error"]);
-            deepEqual(called, [["debug"], ["info"], ["log"], ["warn"], ["error"]]);
+            nohow.error("error");
+            env.LOG_LEVEL = "quiet";
+            nohow.error("error");
+            deepEqual(called, ["debug\n", "info\n", "log\n", "warn\n", "error\n"]);
 
         } finally {
-            console.error = err;
+            console._stderr.write = write;
             env.LOG_LEVEL = level;
         }
 
