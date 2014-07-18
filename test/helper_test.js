@@ -8,7 +8,7 @@ var deepEqual = assert.deepEqual;
 
 suite("Lazylib:", function() {
     test("lazylib", function() {
-        assert.isDefined(helper.lazylib.glob, "lazylib.glob");
+        assert.isDefined(helper.lazylib.globy, "lazylib.globy");
         assert.isDefined(helper.lazylib.Watcher, "lazylib.Watcher");
         assert.isDefined(helper.lazylib.StaticServer, "lazylib.StaticServer");
     });
